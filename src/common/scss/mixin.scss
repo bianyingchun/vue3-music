@@ -1,0 +1,114 @@
+@mixin text-overflow($width: 100%, $display: block) {
+  width: $width;
+  display: $display;
+  white-space: nowrap;
+  -ms-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+@mixin mutil-text-overflow($line: 2, $width: 100%) {
+  width: $width;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line;
+  overflow: hidden;
+}
+
+@mixin borderTop1px($color) {
+  @include borderY1px($color, top);
+}
+
+@mixin borderY1px($color, $dir: top) {
+  position: relative;
+  &:after {
+    content: " ";
+    position: absolute;
+    left: 0;
+    @if $dir == "bottom" {
+      bottom: 0;
+    } @else {
+      top: 0;
+    }
+    height: 1px;
+    width: 100%;
+    -webkit-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+    background-color: $color;
+    @media (-webkit-min-device-pixel-ratio: 2.5),
+      (min-device-aspect-ratio: 2.5) {
+      -webkit-transform: scaleY(0.4);
+      transform: scaleY(0.4);
+    }
+    @media (-webkit-min-device-pixel-ratio: 3), (min-device-aspect-ratio: 3) {
+      -webkit-transform: scaleY(0.33333);
+      transform: scaleY(0.33333);
+    }
+    @media (-webkit-min-device-pixel-ratio: 3.5),
+      (min-device-aspect-ratio: 3.5) {
+      -webkit-transform: scaleY(0.2857);
+      transform: scaleY(0.2857);
+    }
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    box-sizing: border-box;
+  }
+}
+
+@mixin borderX1px($color, $dir: left) {
+  position: relative;
+  &:after {
+    content: " ";
+    position: absolute;
+    top: 0;
+    @if $dir == "right" {
+      right: 0;
+    } @else {
+      left: 0;
+    }
+    width: 1px;
+    -webkit-transform: scaleX(0.5);
+    transform: scaleX(0.5);
+    height: 100%;
+    background-color: $color;
+    @media (-webkit-min-device-pixel-ratio: 2.5),
+      (min-device-aspect-ratio: 2.5) {
+      -webkit-transform: scaleX(0.4);
+      transform: scaleX(0.4);
+    }
+    @media (-webkit-min-device-pixel-ratio: 3), (min-device-aspect-ratio: 3) {
+      -webkit-transform: scaleX(0.33333);
+      transform: scaleX(0.33333);
+    }
+    @media (-webkit-min-device-pixel-ratio: 3.5),
+      (min-device-aspect-ratio: 3.5) {
+      -webkit-transform: scaleX(0.2857);
+      transform: scaleX(0.2857);
+    }
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    box-sizing: border-box;
+  }
+}
+@mixin border1px($color, $dir) {
+  @if $dir== "right" or $dir == "left" {
+    @include borderX1px($color, $dir);
+  } @else if $dir== "top" or $dir == "bottom" {
+    @include borderY1px($color, $dir);
+  }
+}
+
+@mixin css-var($header-height, $footer-height) {
+  #{--header-height}: $header-height;
+  #{--footer-height}: $footer-height;
+}
+
+@mixin flex-list($column-gap:$gap, $row-gap:$gap,$column-count:3){
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -$column-gap;
+  .item {
+    width: calc((100% - #{$column-gap} * #{$column-count}) / #{$column-count});
+    margin-right: $column-gap;
+    margin-bottom: $row-gap;
+  }
+}
