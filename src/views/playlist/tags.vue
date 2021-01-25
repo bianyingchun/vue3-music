@@ -15,7 +15,7 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { GlobalState } from '@/typing'
+import { GlobalState } from '@/types'
 import * as Types from '@/store/action-types'
 export default defineComponent({
   setup() {

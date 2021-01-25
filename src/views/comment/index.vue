@@ -23,62 +23,81 @@
       <div class="comment-list">
         <comment-item
           v-for="(item, index) in list"
-          :key="index"
+          :key="item.commentId"
           :comment="item"
-          @toggle-like="toggleLike"
-          @click="reply(item)"
-          v-longpress="onPressItem(item)"
+          @toggle-like="onToggleLikeComment"
+          @reply="setReplyTarget(item)"
+          @show-floor="setFloorCommentIndex(index)"
+          @delete="onDeleteParent(item)"
         ></comment-item>
       </div>
     </div>
   </m-page>
-  <div class="comment-box">
-    <div
-      contenteditable="true"
-      class="comment-input"
-      @keydown="onInput"
-      :placeholder="placeholder"
-      @blur="exitReply"
-    ></div>
-    <button class="submit-btn" :disabled="!btnEnable" @click="sendComment">
-      发送
-    </button>
-  </div>
+  <comment-box
+    :replyTarget="replyTarget"
+    v-model:value="commentText"
+    @submit="AddParentComment"
+    @blur="setReplyTarget(null)"
+  ></comment-box>
+  <bottom-panel :show="!!floorComment" @hide="setFloorCommentIndex(-1)">
+    <reply-list
+      :parentComment="floorComment"
+      :id="sourceId"
+      :type="sourceType"
+      @delete-parent="onDeleteParent(floorComment)"
+      @delete-reply="updateCountOnDeleteComment($event, floorComment)"
+      @add-reply="updateCountOnAddComment(floorComment)"
+      @toggle-like-parent="
+        onToggleLikeComment(floorComment.commentId, !floorComment.liked)
+      "
+    ></reply-list>
+  </bottom-panel>
 </template>
 
 <script lang="ts">
 // todo 长按显示操作面板 删除 ，toast 提示
 import { computed, defineComponent, ref, watch } from 'vue'
-import { Comment, CommentType } from '@/typing/comment.ts'
-import {
-  getCommentList,
-  likeComment,
-  addComment,
-  deleteComment
-} from '@/common/api/comment'
-import { useRoute } from 'vue-router'
 import CommentItem from './components/comment-item.vue'
+import CommentBox from './components/comment-box.vue'
+import ReplyList from './components/reply-list.vue'
+import BottomPanel from '@/components/widget/bottom-panel.vue'
+import { getCommentList } from '@/common/api/comment'
+import { useRoute } from 'vue-router'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { showToast } from '@/plugin/toast'
-import { showToolTips } from '@/plugin/tool-tip'
-import { useStore } from 'vuex'
-import { GlobalState } from '@/typing'
+import { Comment, CommentType, CommentTypeNames } from '@/types'
 import { COMMENT } from '@/common/js/config'
+import { useCommentList } from '@/hooks/useComment'
+
 export default defineComponent({
   components: {
-    CommentItem
+    CommentItem,
+    CommentBox,
+    BottomPanel,
+    ReplyList
   },
   setup() {
     const route = useRoute()
     const { id, type } = route.params
     const sourceId = Number(id)
-    const sourceType = COMMENT.type[type as CommentType]
-    const list = ref([] as Comment[])
+    const sourceType = CommentType[type as CommentTypeNames]
     const hasMore = ref(true)
     const loading = ref(false)
     const total = ref(0)
     const sortTypeList =
-      type === 'music' ? COMMENT.sortType.music : COMMENT.sortType.other
+      sourceType === CommentType.music
+        ? COMMENT.sortType.music
+        : COMMENT.sortType.other
+    const {
+      list,
+      onDeleteComment,
+      onAddComment,
+      replyTarget,
+      setReplyTarget,
+      commentText,
+      onToggleLikeComment,
+      updateCommentItem
+    } = useCommentList(sourceId, sourceType)
     const sortIndex = ref(0)
     function toggleSortType(index: number) {
       sortIndex.value = index
@@ -101,124 +120,92 @@ export default defineComponent({
       if (sortType === 3 && pageInfo.pageNo > 1) {
         opts.cursor = list.value[list.value.length - 1].time
       }
-      const res = await getCommentList(sourceId, sourceType, opts)
-      loading.value = false
-      hasMore.value = res.hasMore
-      list.value = [...list.value, ...res.comments]
-      total.value = res.totalCount
-      pageInfo.pageNo++
+      try {
+        const res = await getCommentList(sourceId, sourceType, opts)
+        loading.value = false
+        hasMore.value = res.hasMore
+        list.value = [...list.value, ...res.comments]
+        total.value = res.totalCount
+        pageInfo.pageNo++
+      } catch (err) {
+        showToast('加载失败')
+      } finally {
+        loading.value = false
+      }
     }
-    watch(
-      sortIndex,
-      async () => {
-        pageInfo.pageNo = 1
-        hasMore.value = true
-        list.value = []
-        await getList()
-      },
-      { immediate: true }
-    )
-
+    watch(sortIndex, async () => {
+      pageInfo.pageNo = 1
+      hasMore.value = true
+      list.value = []
+      await getList()
+    })
     const refreshElm = ref<null | HTMLElement>(null)
     useLoadMore(refreshElm, getList)
-
-    // like comment
-    function _togglelikeCommentItem(id: number, islike: boolean) {
-      const index = list.value.findIndex(item => item.commentId === id)
-      if (index < 0) return
-      const item = list.value[index]
-      if (islike) {
-        item.likedCount += 1
-      } else {
-        item.likedCount -= 1
-      }
-      item.liked = islike
+    getList()
+    const floorCommentIndex = ref(-1)
+    const floorComment = computed(() => list.value[floorCommentIndex.value])
+    function setFloorCommentIndex(value: number) {
+      floorCommentIndex.value = value
     }
-    let postLoading = false
-    async function toggleLike(cid: number, islkie: boolean) {
-      if (postLoading) return
-      postLoading = true
-      await likeComment({
-        id: sourceId,
-        t: islkie ? 1 : 0,
-        cid,
-        type: sourceType
-      })
-      _togglelikeCommentItem(cid, islkie)
-      postLoading = false
-    }
-
-    //add comment
-    const commentContent = ref('')
-    const replyTarget = ref<Comment | null>()
-    const placeholder = computed(() => {
-      if (commentContent.value) return ''
-      return replyTarget.value
-        ? `回复${replyTarget.value.user.nickname}:`
-        : '千头万绪，落笔汇成评论一句'
-    })
-    const btnEnable = computed(() => {
-      return commentContent.value.length
-    })
-    function onInput(e: KeyboardEvent) {
-      const t = e.target as HTMLDivElement
-      commentContent.value = t.innerText
-    }
-    function _addCommentItem(item: Comment) {
-      list.value.unshift(item)
-    }
-    async function sendComment() {
-      const content = commentContent.value.trim()
-      if (!content) {
-        return showToast('请输入文本')
-      }
-      const params: any = {
-        id: sourceId,
-        t: replyTarget.value ? 2 : 1,
-        type: sourceType,
-        content: content
-      }
-      if (replyTarget.value) {
-        params.commentId = replyTarget.value.commentId
-      }
-      const res = await addComment(params)
-      _addCommentItem(res.data.comment)
-      commentContent.value = ''
-    }
-    // reply comment
-    function reply(item: Comment) {
-      replyTarget.value = item
-    }
-    function exitReply() {
-      replyTarget.value = null
-    }
-    //delete comment
-    function _deleteCommentItem(id: number) {
-      const index = list.value.findIndex(item => item.commentId === id)
-      if (index < 0) return
-      list.value.splice(index, 1)
-    }
-    async function deleteCommentItem(commentId: number) {
-      await deleteComment({
-        id: sourceId,
-        type: sourceType,
-        commentId
-      })
-      _deleteCommentItem(commentId)
-    }
-    const store = useStore<GlobalState>()
-    function onPressItem(item: Comment) {
-      return () => {
-        if (item.user.userId === store.state.auth.account?.id) {
-          return showToolTips([
-            {
-              title: '删除评论',
-              action: () => {
-                deleteCommentItem(item.commentId)
-              }
-            }
-          ])
+    function updateCountOnAddComment(
+      parentComment?: Comment // 楼层下新增评论(新增回复)
+    ) {
+      // 新增一条回复
+      // 新增一条comment
+      const addCount = 1
+      if (parentComment) {
+        const showFloorComment = parentComment.showFloorComment || {
+          replyCount: 0,
+          showReplyCount: true
         }
+        updateCommentItem({
+          ...parentComment,
+          showFloorComment: {
+            ...showFloorComment,
+            replyCount: showFloorComment.replyCount + 1
+          }
+        })
+      }
+      total.value = total.value + addCount
+    }
+    function updateCountOnDeleteComment(
+      deletedComment: Comment,
+      parentComment?: Comment
+    ) {
+      // 1. 删除楼层下的某条回复
+      // 2. 有回复的评论
+      // 3. 无回复无楼层的评论
+      let deletedCount = 1
+      if (parentComment) {
+        const showFloorComment = parentComment.showFloorComment
+        if (showFloorComment) {
+          updateCommentItem({
+            ...parentComment,
+            showFloorComment: {
+              ...showFloorComment,
+              replyCount: showFloorComment.replyCount - 1
+            }
+          })
+        }
+      } else {
+        deletedCount += deletedComment.showFloorComment
+          ? deletedComment.showFloorComment.replyCount
+          : 0
+      }
+      total.value = total.value - deletedCount
+    }
+
+    async function AddParentComment(value: string) {
+      const res = await onAddComment(value)
+      res && updateCountOnAddComment()
+      return res
+    }
+
+    async function onDeleteParent(comment: Comment) {
+      const res = await onDeleteComment(comment)
+      if (res) {
+        updateCountOnDeleteComment(comment)
+        setFloorCommentIndex(-1)
       }
     }
     return {
@@ -227,18 +214,22 @@ export default defineComponent({
       total,
       loading,
       refreshElm,
-      toggleLike,
-      onInput,
-      btnEnable,
-      sendComment,
-      placeholder,
-      reply,
-      exitReply,
-      deleteCommentItem,
-      onPressItem,
+      sourceId,
+      sourceType,
+      onToggleLikeComment,
+      commentText,
+      onDeleteParent,
+      onAddComment,
+      AddParentComment,
+      updateCountOnDeleteComment,
+      updateCountOnAddComment,
       toggleSortType,
       sortIndex,
-      sortTypeList
+      sortTypeList,
+      setReplyTarget,
+      replyTarget,
+      floorComment,
+      setFloorCommentIndex
     }
   }
 })
@@ -248,6 +239,7 @@ export default defineComponent({
 .comment-container {
   height: 100%;
   overflow-y: auto;
+  margin-bottom: 60px;
 }
 .navbar-container {
   position: relative;

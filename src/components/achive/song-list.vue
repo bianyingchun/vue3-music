@@ -51,8 +51,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Track, TrackId } from '@/typing/playlist'
-import { useRouter } from 'vue-router'
+import { Track, TrackId } from '@/types'
 import ToolPanel from '@/components/achive/tool-panel.vue'
 import { favTrackToMix } from '@/hooks/useFavToMix'
 import { useSongAr } from '@/hooks/useSongAr'
@@ -81,16 +80,15 @@ export default defineComponent({
   },
   emits: ['select', 'delete'],
   setup(props, { emit }) {
-    const router = useRouter()
     const { getSingerName, showSongAr } = useSongAr()
     function selectItem(item: Track, index: number) {
-      if (props.currentItem.id === item.id) {
-        router.push({
-          path: '/song'
-        })
-      } else {
-        emit('select', props.list, index)
-      }
+      // if (props.currentItem.id === item.id) {
+      //   router.push({
+      //     path: '/song'
+      //   })
+      // } else {
+      emit('select', props.list, index)
+      // }
     }
 
     function getTools(song: Track) {

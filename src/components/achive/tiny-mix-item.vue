@@ -13,11 +13,11 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Playlist } from '@/typing'
+import { Playlist, Playlist3 } from '@/types'
 export default defineComponent({
   props: {
     mix: {
-      type: Object as PropType<Playlist>
+      type: Object as PropType<Playlist | Playlist3>
     },
     isSelect: Boolean
   },

@@ -16,7 +16,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import SongList from '@/components/achive/song-list.vue'
-import { Track } from '@/typing/playlist'
+import { Track } from '@/types'
 export default defineComponent({
   components: {
     SongList

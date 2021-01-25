@@ -1,5 +1,19 @@
 <template>
   <div class="discovery">
+    <div class="banner">
+      <swiper
+        :autoplay="true"
+        :loop="true"
+        :pagination="{ el: '.swiper-pagination' }"
+      >
+        <swiper-slide :key="index" v-for="(item, index) in banners">
+          <div class="banner-item">
+            <img :src="item.pic" alt="" />
+          </div>
+        </swiper-slide>
+        <div class="swiper-pagination"></div>
+      </swiper>
+    </div>
     <div class="block ball-list">
       <router-link
         class="ball-item"
@@ -50,28 +64,45 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { getHomePage, getHomeBallList } from '@/common/api/discovery'
-import { HomePageData, Ball } from '@/typing/home'
+import SwiperCore, { Scrollbar, Autoplay, Pagination } from 'swiper'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import {
+  getHomePage,
+  getHomeBallList,
+  getBannerList
+} from '@/common/api/discovery'
+import { HomePageData, Ball, Banner } from '@/types'
 import CustomSong from './components/custom-songs.vue'
 import RcmdPlaylists from './components/rcmd-playlists.vue'
-
+SwiperCore.use([Scrollbar, Autoplay, Pagination])
 export default defineComponent({
   components: {
     CustomSong,
-    RcmdPlaylists
+    RcmdPlaylists,
+    Swiper,
+    SwiperSlide
   },
   setup() {
     const homeData = ref<HomePageData>({})
     const ballList = ref<Ball[]>([])
-    async function getData() {
+    const banners = ref<Banner[]>([])
+    async function getDiscoveryData() {
       const res = await Promise.all([getHomePage(), getHomeBallList()])
       homeData.value = res[0]
       ballList.value = res[1]
     }
-    getData()
+    async function getBanners() {
+      const res = await getBannerList()
+      if (res.data.code === 200) {
+        banners.value = res.data.banners
+      }
+    }
+    getDiscoveryData()
+    getBanners()
     return {
       ballList,
-      homeData
+      homeData,
+      banners
     }
   }
 })
@@ -81,6 +112,15 @@ export default defineComponent({
 .discovery {
   background: $module-bg;
   overflow: hidden;
+  .banner {
+    .banner-item {
+      width: 100%;
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
   .ball-list {
     padding: $padding;
     display: flex;
@@ -128,5 +168,8 @@ export default defineComponent({
       }
     }
   }
+}
+.swiper-pagination ::v-deep .swiper-pagination-bullet-active {
+  background: #fff;
 }
 </style>

@@ -1,16 +1,20 @@
 import { computed, ref, nextTick } from 'vue'
-import { GlobalState, PlayMode } from '@/typing'
-import { Track } from '@/typing/playlist'
+import { GlobalState, PlayMode, Track } from '@/types'
 import { Store } from 'vuex'
 import * as Types from '@/store/action-types'
+import { showToast } from '@/plugin/toast'
+import { checkSong } from '@/common/api/song'
+import { popup } from '@/plugin/popup'
 
-const audio = ref<HTMLAudioElement | null>(null)
 function getSource(id: number) {
   return `https://music.163.com/song/media/outer/url?id=${id}.mp3`
 }
+
 export function usePlayer(store: Store<GlobalState>) {
+  const audio = ref<HTMLAudioElement | null>(null)
   const currentSong = computed<Track>(() => store.getters['player/currentSong'])
   const playList = computed(() => store.state.player.playList)
+  const sequenceList = computed(() => store.state.player.sequenceList)
   const singerName = computed(() =>
     currentSong.value.ar.map((item: any) => item.name).join('/')
   )
@@ -26,8 +30,7 @@ export function usePlayer(store: Store<GlobalState>) {
       like
     })
   }
-  // add/remove playlist
-
+  // add to /remove from  playlist
   const playing = computed(() => store.state.player.playing)
   function setPlaying(value: boolean) {
     store.commit('player/' + Types.SET_PLAYING_STATE, value)
@@ -37,9 +40,19 @@ export function usePlayer(store: Store<GlobalState>) {
     const t = currentTime.value / currentSong.value.dt
     return t
   })
+  const cachePercent = ref(0)
+
   function onUpdateTime() {
-    const element = audio.value as HTMLAudioElement
-    store.dispatch('player/updateTime', element.currentTime * 1000)
+    const element = audio.value
+    if (element) {
+      store.dispatch('player/updateTime', element.currentTime * 1000)
+      if (element.buffered.length) {
+        const cacheTime = element.buffered.end(element.buffered.length - 1)
+        cachePercent.value = (cacheTime * 10000) / (element.duration * 10000)
+      } else {
+        cachePercent.value = 0
+      }
+    }
   }
   function setTime(t: number) {
     const element = audio.value as HTMLAudioElement
@@ -55,21 +68,30 @@ export function usePlayer(store: Store<GlobalState>) {
     const element = audio.value as HTMLAudioElement
     element.pause()
   }
-
+  const account = computed(() => store.state.auth.account)
   function play() {
-    if (currentSong.value.id) {
+    const element = audio.value
+    if (currentSong.value.id && element) {
       nextTick(() => {
-        const element = audio.value as HTMLAudioElement
-        if (!element) return
         const playPromise = element.play()
         if (playPromise) {
           playPromise
             .then(res => {
               console.log(res)
             })
-            .catch(e => {
+            .catch(async () => {
               // 音频加载失败
-              console.log(e, '播放失败')
+              if (currentSong.value.fee === 1 && !account.value?.paidFee) {
+                showToast('开通 vip 畅听')
+                return pause()
+              }
+              try {
+                await checkSong(currentSong.value.id)
+              } catch (err) {
+                showToast('亲爱的,暂无版权')
+                return pause()
+              }
+              showToast('播放失败')
             })
         }
       })
@@ -87,12 +109,12 @@ export function usePlayer(store: Store<GlobalState>) {
   }
 
   function next() {
-    setPlaying(true)
+    setTime(0)
     store.dispatch('player/playNext')
   }
 
   function prev() {
-    setPlaying(true)
+    setTime(0)
     store.dispatch('player/playPrev')
   }
   function loop() {
@@ -125,12 +147,37 @@ export function usePlayer(store: Store<GlobalState>) {
       play()
     }
   }
+  function setCurrentSong(song: Track) {
+    store.dispatch('player/playSong', song)
+  }
+  function deleteSong(song: Track) {
+    store.dispatch('player/deleteSong', song)
+  }
+  function clearSong() {
+    popup('确认清空播放列表？')
+      .then(() => {
+        store.dispatch('player/clear')
+      })
+      .catch()
+  }
+  function onError() {
+    showToast('播放失败')
+    pause()
+    setTime(0)
+  }
   const currentLyric = computed(() => store.getters['player/currentLyric'])
+  const fullScreen = computed(() => store.state.player.fullScreen)
+  function toggleFullScreen(payload: boolean) {
+    store.commit('player/' + Types.SET_PLAYER_SCREEN, payload)
+  }
   return {
+    fullScreen,
+    toggleFullScreen,
     currentSong,
     currentLyric,
     singerName,
     playList,
+    sequenceList,
     playing,
     togglePlay,
     percent,
@@ -148,35 +195,33 @@ export function usePlayer(store: Store<GlobalState>) {
     onPause,
     onEnd,
     onPlay,
+    onError,
     lyric,
     isliked,
-    toggleLike
+    toggleLike,
+    deleteSong,
+    clearSong,
+    setCurrentSong,
+    cachePercent
   }
 }
 
 export function usePlayMusic(store: Store<GlobalState>) {
+  const playing = computed(() => store.state.player.playing)
+  const currentSong = computed(() => store.getters['player/currentSong'])
   function selectPlay(list: Track[], index: number) {
     store.dispatch('player/selectPlay', {
       list,
       index
     })
   }
-  function setCurrentSong(song: Track) {
-    store.dispatch('player/playSong', song)
-  }
-  const currentSong = computed(() => store.getters['player/currentSong'])
-  const sequenceList = computed(() => store.state.player.sequenceList)
-
-  const mode = computed(() => store.getters['player/currentMode'])
-  function changeMode() {
-    store.dispatch('player/togglePlayMode')
+  function insertSong(song: Track) {
+    store.dispatch('player/insertSong', song)
   }
   return {
-    selectPlay,
     currentSong,
-    setCurrentSong,
-    sequenceList,
-    mode,
-    changeMode
+    insertSong,
+    selectPlay,
+    playing
   }
 }

@@ -31,8 +31,7 @@ import { getRecommendSongs } from '@/common/api/discovery'
 import { useStore } from 'vuex'
 import SongList from '@/components/achive/song-list.vue'
 import MixPage from '@/components/achive/mix-page.vue'
-import { Track } from '@/typing/playlist'
-import { GlobalState } from '@/typing'
+import { Track, GlobalState } from '@/types'
 import { usePlayMusic } from '@/hooks/usePlayer'
 export default defineComponent({
   setup() {
@@ -78,13 +77,14 @@ export default defineComponent({
   .time {
     display: flex;
     align-items: baseline;
+    margin-right: $gap;
+    font-size: $font-size-lg;
     .date {
       font-size: 36px;
     }
     .divide {
       margin: 0 $gap-xs;
     }
-    margin-right: $gap;
   }
   .text {
     flex: 1;

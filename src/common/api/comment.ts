@@ -1,4 +1,4 @@
-import { CommentList } from '@/typing/comment'
+import { CommentList, CommentType, FloorCommentData, Comment } from '@/types'
 
 import request from './request'
 export interface CommentOpts {
@@ -55,7 +55,7 @@ export function likeComment(params: {
   id: number
   cid: number
   t: 1 | 0
-  type: number
+  type: CommentType
 }) {
   return request<any>('/comment/like', 'get', {
     ...params,
@@ -67,24 +67,41 @@ export function likeComment(params: {
 export function addComment(params: {
   id: number
   t: 1 | 2 //t:1 发送, 2 回复
-  type: number
+  type: CommentType
   content: string
   commentId?: number
 }) {
-  return request<any>('/comment', 'get', {
-    ...params,
-    timestamp: Date.now()
-  })
+  return request<{ comment?: Comment; code: number; msg: string }>(
+    '/comment',
+    'get',
+    {
+      ...params,
+      timestamp: Date.now()
+    }
+  )
 }
 
-export function deleteComment(params: {
+export async function deleteComment(params: {
   id: number
-  type: number
+  type: CommentType
   commentId?: number
 }) {
   return request<any>('/comment', 'get', {
     ...params,
     t: 0,
+    timestamp: Date.now()
+  })
+}
+
+export function getFloorComment(params: {
+  parentCommentId: number
+  id: number
+  type: CommentType
+  time?: number
+  limit?: number
+}) {
+  return request<FloorCommentData>('/comment/floor', 'get', {
+    ...params,
     timestamp: Date.now()
   })
 }

@@ -1,5 +1,5 @@
 // font-size
-$font-size:14px;
+$font-size: 14px;
 $font-size-xs: 10px;
 $font-size-sm: 12px;
 $font-size-md: 14px;
@@ -8,11 +8,11 @@ $font-size-lg: 18px;
 $font-size-lx: 24px;
 
 // border-radius
-$border-radius:4px;
+$border-radius: 4px;
 $border-radius-sm: 2px;
 $border-radius-md: 4px;
 $border-radius-mx: 8px;
-$border-radius-lg:16px;
+$border-radius-lg: 16px;
 
 $gap: 10px;
 $gap-xs: $gap * 0.3;
@@ -23,7 +23,7 @@ $gap-lg: $gap * 1.5;
 $gap-lx: $gap * 2;
 
 // padding
-$padding:10px;
+$padding: 10px;
 $padding-xs: $padding * 0.3;
 $padding-sm: $padding * 0.5;
 $padding-md: $padding * 1;
@@ -41,25 +41,29 @@ $transition-time-normal: 0.25s;
 $transition-time-slow: 0.4s;
 
 //z-index
-$player-index:10;
-$fullscreen-player-index:100;
-$modal-index:1000;
-$title-bar-index:10;
+$player-index: 10;
+$title-bar-index: 10;
+$fullscreen-player-index: 11;
+$siderbar-index: 12;
+$bottom-panel-index: 20;
+$login-box-index: 30;
+$modal-index: 1000;
 // 动态主题配色
-$gary:#afafaf;
+$gary: #afafaf;
 
-$body-bg : var(--body-bg);
-$text:var(--text);
-$text-reversal:var(--text-reversal);
-$text-nav:var(--text-nav);
-$text-secondary:var(--text-secondary);
-$primary:var(--primary);
-$header-bg:var(--header-bg);
-$link-bg:var(--link-bg);
-$module-bg:var(--module-bg);
-$bg-reversal-opacity-9:var(--bg-reversal-opacity-9);
+$body-bg: var(--body-bg);
+$text: var(--text);
+$text-reversal: var(--text-reversal);
+$text-nav: var(--text-nav);
+$text-secondary: var(--text-secondary);
+$primary: var(--primary);
+$header-bg: var(--header-bg);
+$link-bg: var(--link-bg);
+$module-bg: var(--module-bg);
+$bg-reversal-opacity-9: var(--bg-reversal-opacity-9);
+$border: var(--border);
+$text-link: #0c73c2;
 
-$text-link:#0c73c2;
-
-$modal-bg:rgba(0, 0, 0, 0.3);
-$transition:all .4s ease-in-out;
+$modal-bg: rgba(0, 0, 0, 0.1);
+$transition: all 0.4s ease-in-out;
+$player-height: 60px;

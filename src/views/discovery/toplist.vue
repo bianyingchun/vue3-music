@@ -1,5 +1,5 @@
 <template>
-  <m-page title="排行版">
+  <m-page title="排行榜">
     <template #default>
       <div class="toplist-container">
         <h3>云音乐特色榜</h3>
@@ -31,7 +31,7 @@
 import { defineComponent, ref } from 'vue'
 import MixItem from '@/components/achive/mix-item.vue'
 import { getAllTopList } from '@/common/api/toplist'
-import { Playlist } from '@/typing/playlist'
+import { Playlist } from '@/types'
 export default defineComponent({
   components: {
     MixItem

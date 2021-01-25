@@ -1,9 +1,9 @@
 import { reactive, createApp, App, h } from 'vue'
 import Comp from '@/components/achive/song-ar.vue'
-import { Track, Ar } from '@/typing/playlist'
+import { Track, Ar } from '@/types'
 import router from '@/router'
-let songArInstance: App | null = null
 
+let songArInstance: App | null = null
 const state = reactive<{
   show: boolean
   ar: Ar[]
@@ -43,7 +43,6 @@ export function showSongAr(song: Track) {
     document.body.appendChild(el)
     songArInstance.mount(el)
   }
-  console.log(songArInstance)
 }
 export function getSingerName(track: Track) {
   return track.ar.map((item: any) => item.name).join('/')

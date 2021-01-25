@@ -5,9 +5,9 @@ import {
   PlaylistPage,
   PageParams,
   HqTagList,
-  CreatePlaylistRes
-} from '@/typing'
-import { PlayListDetail } from '@/typing/playlist.ts'
+  CreatePlaylistRes,
+  PlaylistDetail
+} from '@/types'
 //歌单分类
 export async function getCatlist() {
   const result = await request<Plycatlist>('/playlist/catlist', 'get')
@@ -31,7 +31,7 @@ export async function getCatlist() {
 
 // 歌单详情
 export function getPlaylistDetail(id: number) {
-  return request<PlayListDetail>('/playlist/detail', 'get', {
+  return request<PlaylistDetail>('/playlist/detail', 'get', {
     id,
     timestamp: Date.now()
   })
@@ -42,7 +42,7 @@ export function getPlaylistDetail(id: number) {
 // limit: 取出歌单数量 , 默认为 20
 // before: 分页参数,取上一页最后一个歌单的 updateTime 获取下一页数据
 // /top/playlist/highquality?before=1503639064232&limit=3
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
+
 interface HqParams {
   limit?: number
   before?: number

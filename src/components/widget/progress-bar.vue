@@ -7,6 +7,10 @@
         :style="{ width: `${progressWidth}px` }"
       ></div>
       <div
+        className="progress cache"
+        :style="{ width: `${cacheWidth}px` }"
+      ></div>
+      <div
         class="progress-btn-wrapper"
         ref="progressBtn"
         :style="{ transform: `translate3d(${progressWidth}px, 0 , 0)` }"
@@ -21,10 +25,22 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  ref,
+  watch,
+  onUpdated,
+  nextTick
+} from 'vue'
 export default defineComponent({
   props: {
     percent: {
+      type: Number,
+      default: 0
+    },
+    cachePercent: {
       type: Number,
       default: 0
     }
@@ -43,14 +59,28 @@ export default defineComponent({
     const progressWidth = computed(() => {
       return barWidth * selfPer.value
     })
+    const cacheWidth = computed(
+      () => barWidth * props.cachePercent + progressBtnWidth
+    )
+    function calcSize() {
+      const el = progressBar.value
+      if (el && barWidth <= 0) {
+        barWidth = el.clientWidth - progressBtnWidth
+      }
+    }
     onMounted(() => {
-      const e = progressBar.value as HTMLElement
-      barWidth = e.clientWidth - progressBtnWidth
+      calcSize()
+    })
+    onUpdated(() => {
+      nextTick(() => {
+        calcSize()
+      })
     })
     function progressTouchStart(e: TouchEvent) {
+      const element = progress.value
+      if (!element) return
       touch.initialed = true
       touch.starX = e.touches[0].pageX
-      const element = progress.value as HTMLElement
       touch.left = element.clientWidth
     }
     function progressTouchMove(e: TouchEvent) {
@@ -71,7 +101,9 @@ export default defineComponent({
     watch(
       () => props.percent,
       value => {
-        selfPer.value = value
+        if (!touch.initialed) {
+          selfPer.value = value
+        }
       }
     )
     return {
@@ -81,7 +113,8 @@ export default defineComponent({
       progressClick,
       progressBar,
       progress,
-      progressWidth
+      progressWidth,
+      cacheWidth
     }
   }
 })
@@ -98,7 +131,10 @@ export default defineComponent({
     .progress {
       position: absolute;
       height: 100%;
-      background: $text;
+      background: #fff;
+      &.cache {
+        background: rgba($color: #fff, $alpha: 0.5);
+      }
     }
     .progress-btn-wrapper {
       position: absolute;
@@ -113,9 +149,9 @@ export default defineComponent({
         box-sizing: border-box;
         width: 16px;
         height: 16px;
-        border: 3px solid $text;
+        border: 3px solid #fff;
         border-radius: 50%;
-        background: $text;
+        background: #fff;
       }
     }
   }

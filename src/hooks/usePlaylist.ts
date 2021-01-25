@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { Store } from 'vuex'
-import { GlobalState } from '@/typing'
-import { Playlist, Track } from '@/typing/playlist'
+import { GlobalState, Playlist, Track } from '@/types'
 import { showToast } from '@/plugin/toast'
 import { popup } from '@/plugin/popup'
 export function usePlaylist(store: Store<GlobalState>) {

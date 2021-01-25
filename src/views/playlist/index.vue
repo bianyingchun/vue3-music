@@ -17,11 +17,11 @@
             <div class="creator" v-if="playlist.creator">
               <img :src="playlist.creator.avatarUrl" alt="" class="avatar" />
               <span class="nickname">{{ playlist.creator.nickname }}</span>
-              <span class="icon-arrow-right">></span>
+              <span class="iconfont icon-right"></span>
             </div>
             <div class="desc">
               <div class="text">{{ playlist.description }}</div>
-              <span class="icon-arrow-right">></span>
+              <span class="iconfont icon-right"></span>
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@
             >{{ playlist.commentCount ? playlist.commentCount : '评论' }}
           </div>
           <div class="tool-item">
-            <i class="iconfont icon-share">share</i
+            <i class="iconfont icon-share"></i
             >{{ playlist.shareCount ? playlist.shareCount : '分享' }}
           </div>
         </div>
@@ -75,16 +75,14 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import SongList from '@/components/achive/song-list.vue'
-import { GlobalState } from '@/typing'
 import { usePlayMusic } from '@/hooks/usePlayer'
 import MixPage from '@/components/achive/mix-page.vue'
 import { usePlaylist, useMylist } from '@/hooks/usePlaylist'
 import Loading from '@/components/common/loading.vue'
-import { Track } from '@/typing/playlist'
+import { Track, GlobalState } from '@/types'
 export default defineComponent({
   setup() {
     const loading = ref<boolean>(true)
@@ -147,6 +145,7 @@ export default defineComponent({
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     .title,
     .desc > .text {
       @include mutil-text-overflow(2, 100%);

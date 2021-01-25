@@ -18,7 +18,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import Modal from '../widget/modal.vue'
-import { Ar } from '@/typing/playlist'
+import { Ar } from '@/types'
 export default defineComponent({
   props: {
     show: Boolean,

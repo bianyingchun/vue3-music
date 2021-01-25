@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { User } from '@/typing'
+import { User } from '@/types'
 export default defineComponent({
   props: {
     list: Array as PropType<User[]>

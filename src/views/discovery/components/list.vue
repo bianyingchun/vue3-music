@@ -22,7 +22,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from 'vue'
 import { getTopPlaylist, getHqPlaylist } from '@/common/api/playlist'
-import { Playlist } from '@/typing'
+import { Playlist } from '@/types'
 import MixItem from '@/components/achive/mix-item.vue'
 import { useLoadMore } from '@/hooks/useLoadMore'
 

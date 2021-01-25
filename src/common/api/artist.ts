@@ -1,6 +1,6 @@
 import request from './request'
 
-import { SongList, ArtistProfile, ArtistList } from '@/typing'
+import { SongList, ArtistProfile, ArtistList } from '@/types'
 
 export function getTopSongList(id: number) {
   return request<SongList>('/artist/top/song', 'get', { id })
@@ -15,7 +15,10 @@ export function getSongList(id: number, params: SParams = {}) {
 }
 
 export function getArtistProfile(id: number) {
-  return request<ArtistProfile>('/artists', 'get', { id })
+  return request<ArtistProfile>('/artists', 'get', {
+    id,
+    timestamp: Date.now()
+  })
 }
 // export function getAlbumList(id: number, params: PageParams = {}) {
 //   return request<any>('art')
@@ -28,4 +31,12 @@ interface AParams {
 }
 export function getArtistList(params: AParams = {}) {
   return request<ArtistList>('/artist/list', 'get', params)
+}
+// 收藏歌手
+export function followArtist(id: number, follow: boolean) {
+  return request<any>('/artist/sub', 'post', {
+    id,
+    t: follow ? 1 : 0,
+    timestamp: Date.now()
+  })
 }

@@ -19,7 +19,7 @@
 import { defineComponent, PropType } from 'vue'
 import MixItem from './tiny-mix-item.vue'
 import BottomPanel from '../widget/bottom-panel.vue'
-import { Playlist } from '@/typing'
+import { Playlist } from '@/types'
 export default defineComponent({
   props: {
     show: Boolean,

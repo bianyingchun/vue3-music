@@ -1,5 +1,5 @@
 import request from './request'
-import { AllToplist } from '@/typing/toplist'
+import { AllToplist } from '@/types'
 export function getAllTopList() {
   return request<AllToplist>('/toplist', 'get')
 }

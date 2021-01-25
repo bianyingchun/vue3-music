@@ -20,33 +20,97 @@
           ></span>
         </div>
       </div>
-      <div class="content">{{ comment.content }}</div>
-      <div
-        class="replied-content"
-        v-if="comment.beReplied && comment.beReplied.length"
+      <div class="comment-body">
+        <div class="content">{{ comment.content }}</div>
+        <span @click="onTriggerToolbar">
+          <i class="iconfont icon-more"></i>
+        </span>
+      </div>
+      <span
+        @click="$emit('show-floor')"
+        class="reply-count"
+        v-if="
+          !hideReplyCount &&
+            comment.showFloorComment &&
+            comment.showFloorComment.replyCount
+        "
       >
-        <router-link
-          :to="`/user/${comment.beReplied[0].user.userId}`"
-          class="nickname"
-          >@{{ comment.beReplied[0].user.nickname }}</router-link
-        >
-        :{{ comment.beReplied[0].content }}
+        {{ comment.showFloorComment.replyCount }}条回复
+        <i class="iconfont icon-right"></i>
+      </span>
+      <div class="replied-content" v-if="showFloorComment(comment)">
+        <div v-if="comment.beReplied[0].status">评论已删除</div>
+        <div v-else>
+          <router-link
+            :to="`/user/${comment.beReplied[0].user.userId}`"
+            class="nickname"
+            >@{{ comment.beReplied[0].user.nickname }}</router-link
+          >
+          :{{ comment.beReplied[0].content }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { Comment } from '@/typing/comment'
+import { computed, defineComponent, PropType } from 'vue'
+import { useStore } from 'vuex'
+import { GlobalState, Comment } from '@/types'
 import { formatTime } from '@/common/js/util'
+import { useAuth } from '@/hooks/useAuth'
+import { showToolTips } from '@/plugin/tool-tip'
+import { popup } from '@/plugin/popup'
 export default defineComponent({
   props: {
-    comment: Object as PropType<Comment>
+    comment: Object as PropType<Comment>,
+    parentCommentId: Number,
+    hideReplyCount: Boolean
   },
-  setup() {
+  emits: ['show-floor', 'reply', 'delete', 'toggle-like'],
+  setup(props, { emit }) {
+    const store = useStore<GlobalState>()
+    const { account, toggleLoginBox } = useAuth(store)
+    const toolList = computed(() => {
+      if (!account.value || !props.comment) return []
+      const list = [
+        {
+          title: '回复评论',
+          action() {
+            emit('reply')
+          }
+        }
+      ]
+      account.value.id === props.comment.user.userId &&
+        list.push({
+          title: '删除评论',
+          action() {
+            popup('确认删除该条评论？')
+              .then(() => {
+                emit('delete')
+              })
+              .catch(() => console.log('canceled'))
+          }
+        })
+      return list
+    })
+    function onTriggerToolbar() {
+      if (!account.value) {
+        return toggleLoginBox(true)
+      }
+      showToolTips(toolList.value)
+    }
+    function showFloorComment(comment: Comment) {
+      return (
+        comment.beReplied &&
+        comment.beReplied.length &&
+        !(comment.beReplied[0].beRepliedCommentId === props.parentCommentId)
+      )
+    }
     return {
-      formatTime
+      formatTime,
+      showFloorComment,
+      onTriggerToolbar
     }
   }
 })
@@ -90,6 +154,23 @@ export default defineComponent({
         &.active {
           color: $primary;
         }
+      }
+    }
+    .comment-body {
+      display: flex;
+      .content {
+        flex: 1;
+      }
+      .icon-more {
+        padding: $padding-xs;
+        color: $gary;
+      }
+    }
+    .reply-count {
+      color: $text-link;
+      font-size: $font-size-sm;
+      .iconfont {
+        font-size: $font-size-sm;
       }
     }
     .replied-content {

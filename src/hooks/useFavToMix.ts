@@ -1,9 +1,10 @@
 import { ref, createApp, App, h } from 'vue'
 import Comp from '@/components/achive/fav-to-mix.vue'
 import { useMylist } from './usePlaylist'
-import { Track } from '@/typing/playlist'
-import { Playlist } from '@/typing'
+import { useAuth } from './useAuth'
+import { Track, Playlist } from '@/types'
 import store from '@/store'
+
 let favToMixVm: App | null = null
 
 const show = ref(false)
@@ -12,6 +13,8 @@ function hide() {
 }
 
 export function favTrackToMix(track: Track) {
+  const { account, toggleLoginBox } = useAuth(store)
+  if (!account.value) return toggleLoginBox(true)
   show.value = true
   const { likelist, createdList, addTrack } = useMylist(store)
   const list = likelist.value

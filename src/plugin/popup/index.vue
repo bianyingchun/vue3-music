@@ -42,6 +42,8 @@ export default {
     span {
       color: $primary;
       margin-right: $gap-lx;
+      display: inline-block;
+      padding: $padding-xs;
     }
   }
 }

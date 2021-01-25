@@ -27,7 +27,7 @@
 <script lang="ts">
 import { defineComponent, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { GlobalState } from '@/typing'
+import { GlobalState } from '@/types'
 import * as Types from '@/store/action-types'
 import BottomPanel from '@/components/widget/bottom-panel.vue'
 export default defineComponent({

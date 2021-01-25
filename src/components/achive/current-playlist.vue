@@ -1,110 +1,66 @@
 <template>
-  <span class="playlist-trigger">
-    <i class="iconfont icon-play-list" @click.stop="toggle()"></i>
-  </span>
-  <bottom-panel :show="show" @hide="hide()">
-    <div class="current-playlist">
-      <header>
-        <div class="title">
-          当前播放<span class="count">({{ sequenceList.length }})</span>
+  <div class="current-playlist">
+    <header>
+      <div class="title">
+        当前播放<span class="count">({{ sequenceList.length }})</span>
+      </div>
+      <div class="tools">
+        <div class="play-mode">
+          <span
+            :class="['iconfont', mode.icon]"
+            @click="$emit('change-mode')"
+          ></span
+          >{{ mode.text }}
         </div>
-        <div class="tools">
-          <div class="play-mode">
-            <span :class="['iconfont', mode.icon]" @click="changeMode"></span
-            >{{ mode.text }}
-          </div>
-          <div class="fav-btn">
-            <span class="iconfont icon-add-box"></span>收藏全部
-          </div>
-          <div class="clear-btn">
-            <span class="iconfont icon-delete"></span>
-          </div>
+        <div class="fav-btn">
+          <span class="iconfont icon-add-box"></span>收藏全部
         </div>
-      </header>
-      <main>
-        <div class="song-list">
-          <div
-            class="song-item"
-            v-for="(song, index) in sequenceList"
-            :key="index"
-            :class="{ active: currentSong.id === song.id }"
-          >
-            <div class="content" @click.stop="setCurrentSong(song)">
-              <span class="name">{{ song.name }}</span>
-              <span class="desc">
-                - {{ song.ar.map(item => item.name).join('/') }}</span
-              >
-            </div>
-            <div class="play-flag">播放来源</div>
-            <div class="tools">
-              <span
-                class="iconfont icon-close"
-                @click.stop="deleteSong(song)"
-              ></span>
-            </div>
+        <div class="clear-btn" @click="$emit('clear')">
+          <span class="iconfont icon-delete"></span>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="song-list">
+        <div
+          class="song-item"
+          v-for="(song, index) in sequenceList"
+          :key="index"
+          :class="{ active: currentSong.id === song.id }"
+        >
+          <div class="content" @click.stop="$emit('change-song', song)">
+            <span class="name">{{ song.name }}</span>
+            <span class="desc">
+              - {{ song.ar.map(item => item.name).join('/') }}</span
+            >
+          </div>
+          <div class="play-flag">播放来源</div>
+          <div class="tools">
+            <span
+              class="iconfont icon-close"
+              @click.stop="$emit('delete', song)"
+            ></span>
           </div>
         </div>
-      </main>
-    </div>
-  </bottom-panel>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import BottomPanel from '../widget/bottom-panel.vue'
-import { useStore } from 'vuex'
-import { GlobalState } from '@/typing'
-import { usePlayMusic } from '@/hooks/usePlayer'
-import { Track } from '@/typing/playlist'
-import * as Types from '@/store/action-types'
+import { defineComponent, PropType } from 'vue'
+import { Track, PlayModeItem } from 'src/types'
 export default defineComponent({
-  components: {
-    BottomPanel
+  props: {
+    currentSong: Object as PropType<Track>,
+    sequenceList: Array as PropType<Track[]>,
+    mode: Object as PropType<PlayModeItem>
   },
-
-  setup() {
-    const show = ref(false)
-    function toggle() {
-      show.value = !show.value
-    }
-    function hide() {
-      show.value = false
-    }
-    const store = useStore<GlobalState>()
-    const {
-      setCurrentSong,
-      currentSong,
-      sequenceList,
-      mode,
-      changeMode
-    } = usePlayMusic(store)
-    function deleteSong(song: Track) {
-      store.dispatch('player/deleteSong', song)
-    }
-    function clearPlayList() {
-      store.commit('player/' + Types.SET_PLAYLIST, [])
-    }
-    return {
-      show,
-      toggle,
-      hide,
-      sequenceList,
-      setCurrentSong,
-      currentSong,
-      mode,
-      changeMode,
-      deleteSong,
-      clearPlayList
-    }
-  }
+  emits: ['change-mode', 'clear', 'delete', 'change-song']
 })
 </script>
 
 <style lang="scss" scoped>
-.icon-play-list {
-  font-size: 24px;
-}
-
 .current-playlist {
   position: fixed;
   left: $gap;

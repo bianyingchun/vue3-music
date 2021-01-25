@@ -1,8 +1,9 @@
-import { Track } from '@/typing/playlist'
-import { PlayMode, PlayerState, GlobalState } from '@/typing/index'
-import * as Types from '../action-types'
+import { ParsedLyricData } from './../../types/song'
 import { Module } from 'vuex'
 import { shuffle } from 'lodash'
+import { Track } from '@/types'
+import { PlayMode, PlayerState, GlobalState } from '@/types'
+import * as Types from '../action-types'
 import { loadPlay, savePlay } from '@/common/js/cache'
 import { getLyric } from '@/common/api/song'
 import { PLAY_MODE_LIST } from '@/common/js/config'
@@ -11,6 +12,7 @@ const findIndex = (list: Track[], song: Track) =>
 
 const state: PlayerState = {
   playList: [],
+  fullScreen: false,
   sequenceList: [],
   currentIndex: 0,
   mode: PlayMode.sequence,
@@ -28,38 +30,45 @@ const playerModule: Module<PlayerState, GlobalState> = {
   namespaced: true,
   state: state,
   mutations: {
-    [Types.SET_PLAYING_STATE](state, flag) {
+    [Types.SET_PLAYING_STATE](state, flag: boolean) {
       state.playing = flag
     },
-    [Types.SET_PLAYLIST](state, list) {
+    [Types.SET_PLAYLIST](state, list: Track[]) {
       state.playList = list
     },
-    [Types.SET_SEQUENCE_LIST](state, list) {
+    [Types.SET_SEQUENCE_LIST](state, list: Track[]) {
       state.sequenceList = list
+    },
+    [Types.SET_PLAYER_SCREEN](state, payload: boolean) {
+      state.fullScreen = payload
     },
     [Types.SET_PLAY_MODE](state, mode: PlayMode) {
       state.mode = mode
     },
-    [Types.SET_CURRENT_INDEX](state, index) {
+    [Types.SET_CURRENT_INDEX](state, index: number) {
       state.currentIndex = index
     },
-    [Types.SET_PLAY_HISTORY](state, history) {
+    [Types.SET_PLAY_HISTORY](state, history: Track[]) {
       state.playHistory = history
     },
-    [Types.SET_LYRIC_DATA](state, data) {
+    [Types.SET_LYRIC_DATA](state, data: ParsedLyricData) {
       state.lyric.data = data
     },
-    [Types.SET_LYRIC_FETCHING](state, payload) {
+    [Types.SET_LYRIC_FETCHING](state, payload: boolean) {
       state.lyric.fetching = payload
     },
-    [Types.SET_CURRENT_TIME](state, payload) {
+    [Types.SET_CURRENT_TIME](state, payload: number) {
       state.currentTime = payload
     },
-    [Types.SET_LYRIC_INDEX](state, index) {
+    [Types.SET_LYRIC_INDEX](state, index: number) {
       state.lyric.currentIndex = index
     }
   },
   actions: {
+    clear({ commit }) {
+      commit(Types.SET_PLAYLIST, [])
+      commit(Types.SET_SEQUENCE_LIST, [])
+    },
     async fetchLyric({ commit, state }, id: string | number) {
       if (state.lyric.fetching) return
       commit(Types.SET_LYRIC_FETCHING, true)
@@ -74,6 +83,8 @@ const playerModule: Module<PlayerState, GlobalState> = {
       }
     },
     selectPlay({ commit, state }, { list, index }) {
+      if (list === state.sequenceList && index === state.currentIndex)
+        return commit(Types.SET_PLAYER_SCREEN, true)
       commit(Types.SET_SEQUENCE_LIST, list)
       if (state.mode === PlayMode.random) {
         const randomList = shuffle(list)
@@ -183,7 +194,6 @@ const playerModule: Module<PlayerState, GlobalState> = {
     togglePlayMode({ commit, state }) {
       const mode = (state.mode + 1) % PLAY_MODE_LIST.length
       if (mode === PlayMode.random) {
-        console.log('mode', mode)
         const randomList = shuffle(state.playList)
         commit(Types.SET_PLAYLIST, randomList)
       }

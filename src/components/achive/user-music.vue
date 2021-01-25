@@ -10,8 +10,8 @@
         v-if="playlist.likelist"
       ></mix-item>
     </div>
-    <div class="module-container mix-list-container">
-      <div class="module-header" v-if="playlist.created">
+    <div class="module-container mix-list-container" v-if="playlist.created">
+      <div class="module-header">
         <h3 class="title">创建歌单</h3>
         <span class="sub-text"> ({{ playlist.created.length }}个)</span>
       </div>

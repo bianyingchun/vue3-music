@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @touchmove.stop>
     <div class="mix-list">
       <mix-item
         v-for="item in list"
@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Mix } from '@/typing/home'
+import { Mix } from '@/types'
 import MixItem from '@/components/achive/mix-item.vue'
 export default defineComponent({
   props: {

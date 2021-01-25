@@ -1,6 +1,11 @@
 import request from './request'
-import { RecommendSongs } from '@/typing'
-import { OriginHomePageData, Block, HomePageData } from '@/typing/home'
+import {
+  RecommendSongs,
+  OriginHomePageData,
+  Block,
+  HomePageData,
+  BannerData
+} from '@/types'
 //首页-发现-圆形图标入口列表
 export async function getHomeBallList() {
   const res = await request<any>('/homepage/dragon/ball', 'get')
@@ -10,19 +15,19 @@ export async function getHomeBallList() {
       id: 0,
       icon: list[0].iconUrl as string,
       text: '每日推荐',
-      url: '/discovery/recommend/taste'
+      url: '/taste'
     },
     {
       id: 1,
       icon: list[1].iconUrl as string,
       text: '歌单',
-      url: '/discovery/playlist'
+      url: '/playlist/square'
     },
     {
       id: 2,
       icon: list[2].iconUrl as string,
       text: '排行榜',
-      url: '/discovery/toplist'
+      url: '/toplist'
     }
   ]
 }
@@ -44,9 +49,9 @@ export async function getHomePage() {
       const resource = item.resources[0]
       return {
         id: resource.resourceId,
-        name: resource.uiElement.mainTitle?.title,
-        playCount: resource.resourceExtInfo.playCount,
-        coverImgUrl: resource.uiElement.image?.imageUrl
+        name: resource.uiElement.mainTitle?.title || '',
+        playCount: resource.resourceExtInfo.playCount || 0,
+        coverImgUrl: resource.uiElement.image?.imageUrl || ''
       }
     })
   }
@@ -73,4 +78,13 @@ export async function getHomePage() {
     }
   }
   return data
+}
+
+// type:资源类型,对应以下类型,默认为 0 即PC
+// 0: pc
+// 1: android
+// 2: iphone
+// 3: ipad
+export function getBannerList() {
+  return request<BannerData>('/banner', 'get', { type: 1 })
 }

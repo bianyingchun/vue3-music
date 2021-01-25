@@ -36,7 +36,7 @@ export default defineComponent({
   background: $module-bg;
   header {
     .title-bar {
-      padding: $padding-lg;
+      padding: 0 $padding-lg;
       display: flex;
       align-items: center;
       font-size: $font-size-lg;

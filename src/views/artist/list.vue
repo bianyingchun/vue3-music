@@ -28,22 +28,12 @@
     </template>
     <template #default>
       <div class="artist-list">
-        <div
-          class="artist-item"
+        <artist-item
           v-for="artist in artistList"
           :key="artist.id"
-          @click="$router.push(`/artist/${artist.id}`)"
+          :artist="artist"
         >
-          <img class="avatar" :src="artist.picUrl" />
-          <div class="name">{{ artist.name }}</div>
-          <span class="follow-status unfollowed" v-if="!artist.followed">
-            <i class="iconfont icon-add"></i>关注
-          </span>
-          <span class="follow-status" v-else>
-            <i class="iconfont icon-selected"></i>
-            已关注</span
-          >
-        </div>
+        </artist-item>
       </div>
     </template>
   </m-page>
@@ -53,10 +43,13 @@
 import { computed, defineComponent, ref, watch } from 'vue'
 import { ARTIST_CATEGORY } from '@/common/js/config'
 import { getArtistList } from '@/common/api/artist'
-import { Artist } from '@/typing'
+import { Artist } from '@/types'
+import ArtistItem from '@/components/achive/artist-item.vue'
 const LIMIT = 30
 export default defineComponent({
-  components: {},
+  components: {
+    ArtistItem
+  },
   setup() {
     const defaultType = ARTIST_CATEGORY.type[0].val
     const defaultArea = ARTIST_CATEGORY.area[0].val
@@ -66,13 +59,13 @@ export default defineComponent({
     const areaList = ARTIST_CATEGORY.area.slice(1)
     function setArea(val: number) {
       area.value = val
-      if (type.value === defaultArea) {
+      if (type.value === defaultType) {
         type.value = ARTIST_CATEGORY.type[1].val
       }
     }
     function setType(val: number) {
       type.value = val
-      if (area.value === defaultType) {
+      if (area.value === defaultArea) {
         area.value = ARTIST_CATEGORY.area[1].val
       }
     }
@@ -130,39 +123,6 @@ export default defineComponent({
     display: inline-block;
     &.active {
       color: $primary;
-    }
-  }
-}
-.artist-list {
-  .artist-item {
-    display: flex;
-    align-items: center;
-    padding: $padding;
-    .avatar {
-      width: 50px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-    .name {
-      flex: 1;
-      margin: 0 $gap;
-    }
-    .follow-status {
-      width: 60px;
-      text-align: center;
-      line-height: 24px;
-      height: 24px;
-      border-radius: 24px;
-      border: 1px solid $gary;
-      font-size: $font-size-sm;
-      .iconfont {
-        font-size: $font-size-sm;
-      }
-      &.unfollowed {
-        border-color: $primary;
-        color: $primary;
-      }
     }
   }
 }

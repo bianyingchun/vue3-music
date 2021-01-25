@@ -85,7 +85,7 @@
 </template>
 
 <script lang="ts">
-import { GlobalState } from '@/typing'
+import { GlobalState } from '@/types'
 import { defineComponent, nextTick, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import ProgressBar from '@/components/widget/progress-bar.vue'

@@ -18,7 +18,7 @@ export default defineComponent({
     text: String
   },
   setup() {
-    const theme = computed(() => store.state.config.theme)
+    const theme = computed(() => store.state.system.theme)
     return {
       theme: theme
     }

@@ -1,4 +1,5 @@
-import { Artist } from './index'
+import { Track, Track2 } from './song'
+import { Artist } from './artist'
 export interface OriginHomePageData {
   code: number
   data: Data
@@ -150,98 +151,17 @@ interface ResourceExtInfo {
   playCount?: number
   highQuality?: boolean
   artists?: Artist[]
-  songData?: SongData
+  songData?: Track2
   songPrivilege?: SongPrivilege
   commentSimpleData?: CommentSimpleData
 }
-interface SongData {
-  name: string
-  id: number
-  position: number
-  alias: any[]
-  status: number
-  fee: number
-  copyrightId: number
-  disc: string
-  no: number
-  artists: Artist[]
-  album: Album
-  starred: boolean
-  popularity: number
-  score: number
-  starredNum: number
-  duration: number
-  playedNum: number
-  dayPlays: number
-  hearTime: number
-  ringtone?: (null | string)[]
-  crbt?: any
-  audition?: any
-  copyFrom: string
-  commentThreadId: string
-  rtUrl?: any
-  ftype: number
-  rtUrls: any[]
-  copyright: number
-  transName?: string
-  sign?: any
-  mark: number
-  mvid: number
-  hMusic?: HMusic | HMusic
-  mMusic?: HMusic | HMusic
-  lMusic: HMusic
-  bMusic: HMusic
-  mp3Url?: any
-  rtype: number
-  rurl?: any
-  transNames?: string[]
-}
+
 interface CommentSimpleData {
   content: string
   commentId: number
   threadId: string
   userId: number
   userName: string
-}
-interface HMusic {
-  name?: any
-  id: number
-  size: number
-  extension: string
-  sr: number
-  dfsId: number
-  bitrate: number
-  playTime: number
-  volumeDelta: number
-}
-
-interface Album {
-  name: string
-  id: number
-  type: string
-  size: number
-  picId: number
-  blurPicUrl: string
-  companyId: number
-  pic: number
-  picUrl: string
-  publishTime: number
-  description: string
-  tags: string
-  company: string
-  briefDesc: string
-  artist: Artist
-  songs: any[]
-  alias: string[][]
-  status: number
-  copyrightId: number
-  commentThreadId: string
-  artists: Artist[]
-  subType: string
-  transName?: (null | string)[]
-  mark: number
-  transNames?: string[]
-  picId_str?: string
 }
 
 interface SongPrivilege {
@@ -298,10 +218,11 @@ interface Title {
 }
 
 export interface Mix {
-  id: string
-  name?: string
-  playCount?: number
-  coverImgUrl?: string
+  id: number | string
+  name: string
+  playCount: number
+  coverImgUrl: string
+  [propName: string]: any
 }
 export interface HomePageData {
   rcmdPlaylist?: {
@@ -324,4 +245,97 @@ export interface Ball {
   icon: string
   text: string
   url: string
+}
+
+export interface RecommendSongs {
+  code: number
+  data: {
+    dailySongs: Track[]
+    orderSongs: any[]
+    recommendReasons: RecommendReason[]
+  }
+}
+
+interface RecommendReason {
+  songId: number
+  reason: string
+}
+
+export interface BannerData {
+  banners: Banner[]
+  code: number
+}
+
+export interface Banner {
+  pic: string
+  targetId: number
+  adid?: any
+  targetType: number
+  titleColor: string
+  typeTitle: string
+  url?: any
+  adurlV2?: any
+  exclusive: boolean
+  monitorImpress?: any
+  monitorClick?: any
+  monitorType?: any
+  monitorImpressList: any[]
+  monitorClickList: any[]
+  monitorBlackList?: any
+  extMonitor?: any
+  extMonitorInfo?: any
+  adSource?: any
+  adLocation?: any
+  encodeId: string
+  program?: any
+  event?: any
+  video?: any
+  dynamicVideoData?: any
+  song?: Song
+  bannerId: string
+  alg?: any
+  scm: string
+  requestId: string
+  showAdTag: boolean
+  pid?: any
+  showContext?: any
+  adDispatchJson?: any
+}
+
+interface Song extends Track {
+  privilege: Privilege
+}
+
+interface Privilege {
+  id: number
+  fee: number
+  payed: number
+  st: number
+  pl: number
+  dl: number
+  sp: number
+  cp: number
+  subp: number
+  cs: boolean
+  maxbr: number
+  fl: number
+  toast: boolean
+  flag: number
+  preSell: boolean
+  playMaxbr: number
+  downloadMaxbr: number
+  freeTrialPrivilege: FreeTrialPrivilege
+  chargeInfoList: ChargeInfoList[]
+}
+
+interface ChargeInfoList {
+  rate: number
+  chargeUrl?: any
+  chargeMessage?: any
+  chargeType: number
+}
+
+interface FreeTrialPrivilege {
+  resConsumable: boolean
+  userConsumable: boolean
 }

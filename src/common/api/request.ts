@@ -1,5 +1,6 @@
 import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios'
-import router from '@/router'
+import store from '@/store'
+import { SET_LOGIN_VISIBLE } from '@/store/action-types'
 const instance = axios.create({ timeout: 1000 * 10 })
 instance.defaults.baseURL = 'http://localhost:3000'
 instance.defaults.withCredentials = true
@@ -13,7 +14,7 @@ instance.interceptors.response.use(
   err => {
     const { config, status } = err.response
     if (config.url !== '/user/account' && status === 301) {
-      router.push('/login')
+      store.commit(`auth/${SET_LOGIN_VISIBLE}`, true)
     }
     return Promise.reject(err)
   }

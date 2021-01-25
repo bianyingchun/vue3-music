@@ -1,6 +1,5 @@
 import { reactive, createApp, App, h } from 'vue'
 import Comp from './index.vue'
-let popupInstance: App | null = null
 
 const state = reactive({
   show: false,
@@ -12,7 +11,7 @@ function hide() {
 }
 
 export function popup(text = '') {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     state.text = text
     state.show = true
     function onCancel() {
@@ -23,23 +22,21 @@ export function popup(text = '') {
       resolve()
       hide()
     }
-    if (!popupInstance) {
-      popupInstance = createApp({
-        setup() {
-          return () =>
-            h(Comp, {
-              show: state.show,
-              text: state.text,
-              hide,
-              onCancel,
-              onEnsure
-            })
-        }
-      })
-      const el = document.createElement('div')
-      document.body.appendChild(el)
-      popupInstance.mount(el)
-    }
+    const popupInstance = createApp({
+      setup() {
+        return () =>
+          h(Comp, {
+            show: state.show,
+            text: state.text,
+            hide,
+            onCancel,
+            onEnsure
+          })
+      }
+    })
+    const el = document.createElement('div')
+    document.body.appendChild(el)
+    popupInstance.mount(el)
   })
 }
 

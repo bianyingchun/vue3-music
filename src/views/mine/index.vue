@@ -1,32 +1,21 @@
 <template>
   <div class="mine-page-container">
-    <router-link
-      :to="`/user/${userInfo.userId}`"
-      class="account"
-      v-if="userInfo"
-    >
-      <img :src="userInfo.avatarUrl" class="avatar" />
-      <div class="text">
-        <h3 class="title">{{ userInfo.nickname }}</h3>
-      </div>
-      <span class="iconfont icon-arrow-right">></span>
-    </router-link>
-
+    <account-box />
     <mix-item
-      :mix="playlist.likelist"
+      :mix="likelist"
       class="module-container likelist"
-      v-if="playlist.likelist"
+      v-if="likelist"
     ></mix-item>
 
     <div class="module-container mix-list-container">
       <div class="mix-list-header">
-        <span class="title">创建歌单 ({{ playlist.created.length }}个)</span>
+        <span class="title">创建歌单 ({{ createdList.length }}个)</span>
         <div class="tools">
           <add-mix></add-mix>
         </div>
       </div>
       <div class="mix-list">
-        <mix-item v-for="item in playlist.created" :key="item.id" :mix="item">
+        <mix-item v-for="item in createdList" :key="item.id" :mix="item">
           <tool-panel
             :title="`歌单:${item.name}`"
             :list="getTools(item)"
@@ -36,11 +25,11 @@
     </div>
     <div class="module-container mix-list-container">
       <div class="mix-list-header">
-        <span class="title">收藏歌单 ({{ playlist.faved.length }})</span>
+        <span class="title">收藏歌单 ({{ favedList.length }})</span>
         <div class="tools"></div>
       </div>
       <div class="mix-list">
-        <mix-item v-for="item in playlist.faved" :key="item.id" :mix="item">
+        <mix-item v-for="item in favedList" :key="item.id" :mix="item">
           <tool-panel
             :title="`歌单:${item.name}`"
             :list="getTools(item)"
@@ -52,26 +41,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent } from 'vue'
 import { useStore } from 'vuex'
-import { GlobalState } from '@/typing'
 import MixItem from '@/components/achive/tiny-mix-item.vue'
 import ToolPanel from '@/components/achive/tool-panel.vue'
 import AddMix from '@/components/achive/create-playlist.vue'
-import { Playlist } from '@/typing/playlist'
+import AccountBox from '@/components/achive/account-box.vue'
+import { Playlist, GlobalState } from '@/types'
 import { usePlaylist, useMylist } from '@/hooks/usePlaylist'
+
 export default defineComponent({
   components: {
     MixItem,
     ToolPanel,
-    AddMix
+    AddMix,
+    AccountBox
   },
   setup() {
     const store = useStore<GlobalState>()
-    const userInfo = computed(() => store.state.auth.profile)
-    const playlist = computed(() => store.state.playlists.mine)
     const { checkIsSelf, toggleSubscribe } = usePlaylist(store)
-    const { deletePlaylist } = useMylist(store)
+    const { deletePlaylist, createdList, likelist, favedList } = useMylist(
+      store
+    )
     function getTools(playlist: Playlist) {
       const isSelf = checkIsSelf(playlist)
       const list = []
@@ -98,8 +89,9 @@ export default defineComponent({
       return list
     }
     return {
-      userInfo,
-      playlist,
+      createdList,
+      likelist,
+      favedList,
       getTools
     }
   }

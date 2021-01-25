@@ -1,8 +1,15 @@
 import { Module } from 'vuex'
 import * as Types from '../action-types'
-import { CategoryList, GlobalState, PlaylistsState, Tag } from '@/typing'
-import { Playlist as PlaylistDetail, Track } from '@/typing/playlist'
-import { Playlist } from '@/typing'
+import {
+  CategoryList,
+  GlobalState,
+  PlaylistsState,
+  Playlist,
+  Tag,
+  Playlist2,
+  Track
+} from '@/types'
+
 import {
   getCatlist,
   getHqTaglist,
@@ -14,6 +21,7 @@ import {
 } from '@/common/api/playlist'
 import { getUserPlaylist, getlikelistIds } from '@/common/api/user'
 import { likeSong } from '@/common/api/song'
+// import { showToast } from '@/plugin/toast'
 const state: PlaylistsState = {
   list: [],
   hqTags: [],
@@ -25,6 +33,7 @@ const state: PlaylistsState = {
     likelist: null,
     likelistIds: []
   },
+  posting: false,
   loading: false
 }
 
@@ -38,7 +47,7 @@ const playlists: Module<PlaylistsState, GlobalState> = {
     [Types.SET_HQ_TAGLIST](state, payload: Tag[]) {
       state.hqTags = payload
     },
-    [Types.SET_PLAYLIST_DETAIL](state, payload: PlaylistDetail | null) {
+    [Types.SET_PLAYLIST_DETAIL](state, payload: Playlist2 | null) {
       state.detail = payload
     },
     [Types.SET_CREATED_PLAYLIST](state, list: Playlist[]) {
@@ -47,7 +56,7 @@ const playlists: Module<PlaylistsState, GlobalState> = {
     [Types.SET_FAVED_PLAYLIST](state, list: Playlist[]) {
       state.mine.faved = list
     },
-    [Types.SET_USER_LIKELIST](state, list: Playlist) {
+    [Types.SET_USER_LIKELIST](state, list: Playlist | null) {
       state.mine.likelist = list
     },
     [Types.SET_USER_LIKELISTIDS](state, list: number[]) {
@@ -89,7 +98,7 @@ const playlists: Module<PlaylistsState, GlobalState> = {
       { state, commit },
       payload: { playlist: Playlist; subscribed: boolean }
     ) {
-      if (state.loading) return
+      if (state.posting) return
       commit(Types.SET_PLAYLIST_LOADING, true)
       const { subscribed, playlist } = payload
       const pid = playlist.id
@@ -163,7 +172,6 @@ const playlists: Module<PlaylistsState, GlobalState> = {
       const { pid, track } = payload
       const res = await updatePlaylistTracks(pid, track.id, 'add')
       if (res.data.body.code != 200) {
-        console.log(res.data.body.message)
         return res.data.body.message
       }
       if (state.detail && state.detail.id) {
@@ -203,6 +211,12 @@ const playlists: Module<PlaylistsState, GlobalState> = {
           commit(Types.SET_CREATED_PLAYLIST, list)
         }
       }
+    },
+    clearUserPlaylist({ commit }) {
+      commit(Types.SET_CREATED_PLAYLIST, [])
+      commit(Types.SET_FAVED_PLAYLIST, [])
+      commit(Types.SET_USER_LIKELIST, null)
+      commit(Types.SET_USER_LIKELISTIDS, [])
     }
   }
 }

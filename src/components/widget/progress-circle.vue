@@ -67,7 +67,7 @@ export default defineComponent({
     }
     &.progress-bar {
       transform: scale(0.9) rotate(-90deg);
-      stroke: $text;
+      stroke: $gary;
     }
   }
 }

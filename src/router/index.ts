@@ -35,11 +35,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/discovery/playlist.vue')
   },
   {
-    path: '/song',
-    name: 'song',
-    component: () => import('../views/song/index.vue')
-  },
-  {
     path: '/playlist/:id',
     name: 'playlist-detail',
     component: () => import('../views/playlist/index.vue'),
@@ -91,6 +86,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/artist/:id/music',
     name: 'artist-music',
     component: () => import('../views/artist/music.vue')
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('../views/search/index.vue')
   }
 ]
 

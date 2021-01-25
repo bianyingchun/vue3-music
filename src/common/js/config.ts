@@ -1,10 +1,18 @@
+import {
+  PlayModeItem,
+  SearchTypeItem,
+  SearchTypeVal,
+  Theme,
+  ThemeItem
+} from '@/types'
+
 export const PLAY_MODE = {
   sequence: 0,
   loop: 1,
   random: 2
 }
 
-export const PLAY_MODE_LIST = [
+export const PLAY_MODE_LIST: PlayModeItem[] = [
   {
     icon: 'icon-sequence',
     text: '循环列表',
@@ -14,10 +22,10 @@ export const PLAY_MODE_LIST = [
   { icon: 'icon-loop', text: '单曲循环', val: 2 }
 ]
 
-export const THEME = {
-  dark: 'dark',
-  default: 'default'
-}
+export const THEME_LIST: ThemeItem[] = [
+  { name: '默认', val: Theme.dark },
+  { name: '暗黑', val: Theme.light }
+]
 
 export const COMMENT_TYPE = {
   music: 0,
@@ -28,14 +36,6 @@ export const COMMENT_TYPE = {
   video: 5
 }
 export const COMMENT = {
-  type: {
-    music: 0,
-    mv: 1,
-    playlist: 2,
-    album: 3,
-    dj: 4,
-    video: 5
-  },
   sortType: {
     music: [
       { text: '推荐', val: 1 },
@@ -92,3 +92,16 @@ export const ARTIST_CATEGORY = {
     }
   ]
 }
+// type: 搜索类型；默认为 1 即单曲 , 取值意义 : 1: 单曲, 10: 专辑,
+// 100: 歌手, 1000: 歌单, 1002: 用户, 1004:
+// MV, 1006: 歌词, 1009: 电台, 1014: 视频, 1018:综合
+export const SEARCH_TYPES: SearchTypeItem[] = [
+  {
+    name: '单曲',
+    type: 'track',
+    val: SearchTypeVal.track
+  },
+  { name: '歌手', type: 'artist', val: SearchTypeVal.artist },
+  { name: '歌单', type: 'playlist', val: SearchTypeVal.playlist },
+  { name: '用户', type: 'user', val: SearchTypeVal.user }
+]

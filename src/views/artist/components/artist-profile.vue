@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { UserDetail, Artist } from '@/typing'
+import { UserDetail, Artist } from '@/types'
 import UserMusic from '@/components/achive/user-music.vue'
 export default defineComponent({
   props: {

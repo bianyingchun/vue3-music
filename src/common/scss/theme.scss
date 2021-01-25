@@ -1,29 +1,42 @@
-
-@mixin css-var($text, $text-reversal, $text-nav, $header-bg, $text-secondary, $primary, $link-bg,$body-bg,$module-bg) {
+@mixin css-var(
+  $text,
+  $text-reversal,
+  $text-nav,
+  $header-bg,
+  $text-secondary,
+  $primary,
+  $link-bg,
+  $body-bg,
+  $module-bg,
+  $border
+) {
   #{--body-bg}: $body-bg;
-  #{--text}:$text;
-  #{--text-reversal}:$text-reversal;
-  #{--text-nav}:$text-nav;
-  #{--text-secondary}:$text-secondary;
-  #{--primary} : $primary;
-  #{--header-bg} :$header-bg;
-  #{--link-bg} :$link-bg;
-  #{--module-bg}:$module-bg;
-  #{--bg-reversal-opacity-9}:rgba($text, 0.9)
+  #{--text}: $text;
+  #{--text-reversal}: $text-reversal;
+  #{--text-nav}: $text-nav;
+  #{--text-secondary}: $text-secondary;
+  #{--primary}: $primary;
+  #{--header-bg}: $header-bg;
+  #{--link-bg}: $link-bg;
+  #{--module-bg}: $module-bg;
+  #{--border}: $border;
+  #{--bg-reversal-opacity-9}: rgba($text, 0.9);
 }
 
 #root-body {
-  &.default {
+  &.light {
     @include css-var(
       $text: #333,
       $text-reversal: #fff,
-      $text-nav:#5d5d5d,
-      $text-secondary:#888,
-      $primary: #d23931, //active 
-      $link-bg: #f34d3f,
-      $header-bg:#da3d34,
+      $text-nav: #5d5d5d,
+      $text-secondary: #888,
+      $primary: #d23931,
+      //active
+        $link-bg: #f34d3f,
+      $header-bg: #da3d34,
       $body-bg: #f0f0f0,
       $module-bg: #fff,
+      $border: #ccc
     );
   }
 
@@ -31,15 +44,14 @@
     @include css-var(
       $text: #fff,
       $text-reversal: #333,
-      $text-nav:#d7d7d7,
-      $text-secondary:#ccc,
-      $primary:#f1423d,
+      $text-nav: #d7d7d7,
+      $text-secondary: #ccc,
+      $primary: #f1423d,
       $link-bg: #414141,
-      $header-bg:#262626,
+      $header-bg: #414141,
       $body-bg: #262626,
       $module-bg: #2c2c2c,
+      $border: #4e4a4a
     );
   }
 }
-//  default : second font-size: 12px; color: #888;
-//  dark : nav:#ccc 

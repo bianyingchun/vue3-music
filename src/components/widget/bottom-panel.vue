@@ -1,12 +1,14 @@
 <template>
-  <div class="modal-wraper" v-if="visible">
-    <div class="mask" v-show="show" @click.stop="$emit('hide')"></div>
-    <transition name="slide-up" @after-leave="afterLeave">
-      <div class="content" @click.stop v-show="show">
-        <slot> </slot>
-      </div>
-    </transition>
-  </div>
+  <teleport to="body">
+    <div class="modal-wraper" v-if="visible">
+      <div class="mask" v-show="show" @click.stop="$emit('hide')"></div>
+      <transition name="slide-up" @after-leave="afterLeave">
+        <div class="content" @click.stop v-show="show">
+          <slot> </slot>
+        </div>
+      </transition>
+    </div>
+  </teleport>
 </template>
 
 <script lang="ts">
@@ -15,6 +17,7 @@ export default defineComponent({
   props: {
     show: Boolean
   },
+  emits: ['hide'],
   setup(props) {
     const visible = ref(props.show)
     function afterLeave() {
@@ -43,7 +46,7 @@ export default defineComponent({
     top: 0;
     bottom: 0;
     right: 0;
-    z-index: $modal-index;
+    z-index: $bottom-panel-index;
   }
   .content {
     position: fixed;
@@ -51,9 +54,10 @@ export default defineComponent({
     bottom: 0;
     width: 100%;
     overflow: hidden;
-    z-index: $modal-index + 1;
+    z-index: $bottom-panel-index + 1;
     border-radius: $border-radius-lg $border-radius-lg 0 0;
     background: $module-bg;
+    color: $text;
   }
 }
 </style>

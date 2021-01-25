@@ -3,6 +3,7 @@
     class="artist-profile"
     :userDetail="userDetail"
     :artist="artist"
+    @toggle-follow="onToggleFollow"
   >
     <template #navbar>
       <div class="nav-container">
@@ -12,7 +13,7 @@
             v-for="(item, index) in navList"
             :key="index"
             :class="{ active: index === navIndex }"
-            @click="toggleTab(index)"
+            @click="onToggleTab(index)"
           >
             {{ item.name }}
           </div>
@@ -32,7 +33,7 @@
             :playlist="playlist"
           ></artist-profile>
         </swiper-slide>
-        <swiper-slide :key="music">
+        <swiper-slide key="music">
           <top-music :list="hotSongs" :more="more"></top-music>
         </swiper-slide>
       </swiper>
@@ -41,13 +42,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
+import { defineComponent, onMounted, reactive, toRefs } from 'vue'
 import { useRoute } from 'vue-router'
-import { getArtistProfile } from '@/common/api/artist'
+import { getArtistProfile, followArtist } from '@/common/api/artist'
 import { getUserDetail, getUserPlaylist } from '@/common/api/user'
 import ArtistProfile from './components/artist-profile.vue'
 import TopMusic from './components/top-music.vue'
 import ProfilePage from '@/components/achive/profile-page.vue'
+import { useNavSwiper } from '@/hooks/useNavSwiper'
 import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper.scss'
@@ -56,6 +58,7 @@ import 'swiper/components/pagination/pagination.scss'
 import 'swiper/components/scrollbar/scrollbar.scss'
 // install Swiper components
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
+import { showToast } from '@/plugin/toast'
 export default defineComponent({
   components: {
     TopMusic,
@@ -74,6 +77,20 @@ export default defineComponent({
       userDetail: null,
       playlist: null
     })
+    async function onToggleFollow(followed: boolean) {
+      if (!state.artist) return
+      try {
+        const res = await followArtist(id, followed)
+        if (res.data.code === 200) {
+          const artist = state.artist
+          state.artist = { ...artist, followed }
+        } else {
+          showToast('关注失败')
+        }
+      } catch (err) {
+        showToast('关注失败')
+      }
+    }
     onMounted(async () => {
       const res = await getArtistProfile(id)
       const { more, hotSongs, artist } = res.data
@@ -90,28 +107,23 @@ export default defineComponent({
         state.playlist = resArr[1]
       }
     })
-
     // swiper
-    const navIndex = ref(0)
-    const navList = ref([{ name: '主页' }, { name: '热门歌曲' }])
-    const swiper = ref(null)
-    function onSlideChange(swiper: any) {
-      navIndex.value = swiper.activeIndex
-    }
-    function toggleTab(index: number) {
-      navIndex.value = index
-      ;(swiper.value as any).slideTo(index, 0, false)
-    }
-    function setControlledSwiper(item: any) {
-      swiper.value = item
-    }
+
+    const {
+      navList,
+      navIndex,
+      onSlideChange,
+      onToggleTab,
+      setControlledSwiper
+    } = useNavSwiper([{ name: '主页' }, { name: '热门歌曲' }])
     return {
       ...toRefs(state),
       navList,
       navIndex,
       onSlideChange,
-      toggleTab,
-      setControlledSwiper
+      onToggleTab,
+      setControlledSwiper,
+      onToggleFollow
     }
   }
 })

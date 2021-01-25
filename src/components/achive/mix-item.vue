@@ -14,12 +14,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Playlist } from '@/typing'
+import { Mix } from '@/types'
 import { formatNumber } from '@/common/js/util'
 export default defineComponent({
   props: {
     mix: {
-      type: Object as PropType<Playlist>
+      type: Object as PropType<Mix>
     },
     isToplist: Boolean
   },
@@ -58,9 +58,11 @@ export default defineComponent({
       display: flex;
       align-items: center;
       font-size: $font-size-sm;
+      color: #fff;
       .iconfont {
         font-size: $font-size-sm;
         margin-right: $gap-xs;
+        color: #fff;
       }
     }
     .desc {

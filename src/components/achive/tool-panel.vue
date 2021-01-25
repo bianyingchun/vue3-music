@@ -1,6 +1,6 @@
 <template>
   <span class="tool-panel-trigger">
-    <i class="iconfont icon-menu" @click.stop="toggle()"></i>
+    <i class="iconfont icon-more" @click.stop="toggle()"></i>
   </span>
   <bottom-panel :show="show" @hide="hide()">
     <div class="tool-panel-container">

@@ -82,7 +82,6 @@ export default defineComponent({
     }
     const showHqFilter = ref(false)
     function toggleShowHqFilter(show: boolean) {
-      console.log('show', show)
       showHqFilter.value = show
     }
     const hqTag = ref('全部')

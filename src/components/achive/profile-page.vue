@@ -1,16 +1,21 @@
 <template>
   <div
-    class="profile-page scroller-container"
-    v-if="artist || (userDetail && userDetail.profile)"
+    class="profile-page page-container"
+    v-if="userDetail || artist"
+    :ref="container"
+    @scroll="onScroll"
   >
     <div class="title-bar">
       <div class="title-bg" :style="{ opacity: titleOpacity }"></div>
       <span class="iconfont icon-back" @click="$router.back()"></span>
       <span class="title">
-        {{ artist ? artist.name : userDetail.profile.nickname }}
+        {{
+          (userDetail ? userDetail.profile.nickname : '') ||
+            (artist ? artist.name : '')
+        }}
       </span>
     </div>
-    <div class="profile-bg">
+    <div class="profile-bg" :ref="header">
       <img :src="artist ? artist.picUrl : userDetail.profile.backgroundUrl" />
       <div class="mask"></div>
     </div>
@@ -27,34 +32,48 @@
             {{ artist ? artist.name : userDetail.profile.nickname }}
           </h2>
           <div class="stat-list" v-if="userDetail">
-            <span class="stat-item">
-              {{ userDetail.profile.followeds }}
+            <router-link
+              class="stat-item"
+              :to="`/user/${userDetail.profile.userId}/follows`"
+            >
+              {{ userDetail.profile.follows }}
               <span class="stat-text">关注</span>
-            </span>
+            </router-link>
             <div class="divide"></div>
-            <span class="stat-item"
-              >{{ userDetail.profile.follows }}
-              <span class="stat-text">关注</span>
-            </span>
+            <router-link
+              class="stat-item"
+              :to="`/user/${userDetail.profile.userId}/followeds`"
+              >{{ userDetail.profile.followeds }}
+              <span class="stat-text">粉丝</span>
+            </router-link>
             <div class="divide"></div>
             <span class="stat-item"> Lv.{{ userDetail.level }}</span>
           </div>
           <div class="stat-list" v-else></div>
-          <div class="action-box">
+          <div
+            class="action-box"
+            v-if="!(userDetail && account.id === userDetail.profile.userId)"
+          >
             <button
               type="button"
               class="follow-status"
               v-if="artist ? artist.followed : userDetail.profile.followed"
+              @click="onToggleFollow(false)"
             >
               已关注
             </button>
-            <button type="button" class="follow-status unfollowed" v-else>
+            <button
+              type="button"
+              class="follow-status unfollowed"
+              @click="onToggleFollow(true)"
+              v-else
+            >
               <i class="iconfont icon-add"></i>关注
             </button>
           </div>
         </div>
       </div>
-      <div class="profile-main">
+      <div class="profile-main" :class="{ unscrollable: !scrollable }">
         <div class="profile-navbar">
           <slot name="navbar"></slot>
         </div>
@@ -66,24 +85,80 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, PropType, ref } from 'vue'
-import { UserDetail, Artist } from '@/typing'
+import { defineComponent, PropType, ref, onMounted, computed } from 'vue'
+import { UserDetail, Artist } from '@/types'
+import { popup } from '@/plugin/popup'
+import { useStore } from 'vuex'
+import { GlobalState } from '@/types'
+import { useAuth } from '@/hooks/useAuth'
 export default defineComponent({
+  emits: ['toggle-follow'],
   props: {
     bgPic: String,
     artist: Object as PropType<Artist | null>,
     userDetail: Object as PropType<UserDetail | null>
   },
-  setup() {
+  setup(props, { emit }) {
+    const store = useStore<GlobalState>()
+    const { account } = useAuth(store)
     const titleOpacity = ref(0)
+    const scrollable = ref(false)
+    const container = ref<HTMLDivElement | null>(null)
+    const header = ref<HTMLDivElement | null>(null)
+    let headerHeight = 0
+    onMounted(() => {
+      const node = header.value
+      if (node) {
+        headerHeight = node.clientHeight
+        const el = node.parentNode?.querySelector('.profile-header')
+        if (el) headerHeight += el.clientHeight
+      }
+    })
+    function onScroll() {
+      const node = container.value
+      if (node) {
+        const top = node.scrollTop
+        const ratio = parseFloat(
+          Math.min(1, top / (headerHeight - 60)).toFixed(2)
+        )
+        titleOpacity.value = ratio
+        scrollable.value = ratio >= 0.99
+      }
+    }
+    const followed = computed(
+      () =>
+        (props.userDetail && props.userDetail.profile.followed) ||
+        (props.artist && props.artist.followed)
+    )
+    function onToggleFollow(value: boolean) {
+      if (value) {
+        emit('toggle-follow', value)
+      } else {
+        popup('确定取消关注？')
+          .then(() => {
+            emit('toggle-follow', false)
+          })
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          .catch(() => {})
+      }
+    }
+
     return {
-      titleOpacity
+      titleOpacity,
+      container,
+      header,
+      onScroll,
+      scrollable,
+      followed,
+      onToggleFollow,
+      account
     }
   }
 })
 </script>
 <style lang="scss" scoped>
 .profile-page {
+  overflow-y: auto;
   .title-bar {
     position: fixed;
     left: 0;
@@ -135,7 +210,7 @@ export default defineComponent({
         height: 80px;
         width: 80px;
         border-radius: 50%;
-        border: 2px solid $text;
+        border: 2px solid #fff;
         left: 50%;
         top: -70px;
         transform: translateX(-50%);
@@ -176,6 +251,7 @@ export default defineComponent({
             &.unfollowed {
               background: $primary;
               border-color: $primary;
+              color: #fff;
             }
           }
         }
@@ -185,6 +261,11 @@ export default defineComponent({
       height: calc(100vh - 60px);
       display: flex;
       flex-direction: column;
+      &.unscrollable {
+        .scroller-container {
+          overflow: hidden;
+        }
+      }
       .profile-swiper {
         flex: 1;
         overflow: hidden;

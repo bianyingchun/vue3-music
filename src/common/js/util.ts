@@ -17,3 +17,12 @@ export const formatNumber = (num: number, ignoreZero = false) => {
   }
   return num
 }
+
+export const fotmatTime = (t: number) => {
+  t = Math.floor(t / 1000)
+  let m: string | number = Math.floor(t / 60)
+  let s: string | number = t % 60
+  m = m < 10 ? '0' + m : m
+  s = s < 10 ? '0' + s : s
+  return m + ':' + s
+}

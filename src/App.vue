@@ -1,47 +1,58 @@
 <template>
-  <div id="root" :class="theme">
+  <div id="root" :class="theme" v-if="isRouterAlive">
     <keep-alive :max="10">
       <router-view :key="$route.fullPath"></router-view>
     </keep-alive>
     <player />
+    <login-box />
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, provide, watch } from 'vue'
+import { computed, defineComponent, provide, watch, ref, nextTick } from 'vue'
 import { useStore } from 'vuex'
-import { GlobalState } from './typing'
+import { GlobalState } from './types'
 import Player from '@/components/achive/player.vue'
-
+import LoginBox from '@/components/achive/login.vue'
 export default defineComponent({
   components: {
-    Player
+    Player,
+    LoginBox
   },
   setup() {
     const store = useStore<GlobalState>()
     // 检测登录状态
-    store.dispatch('auth/checkLogin')
-    // 注入toast 插件
-    const theme = computed(() => store.state.config.theme)
+    const theme = computed(() => store.state.system.theme.current)
     provide('theme', theme)
+    store.dispatch('auth/checkLogin')
+    const isRouterAlive = ref(true)
+    function reload() {
+      isRouterAlive.value = false
+      nextTick(() => (isRouterAlive.value = true))
+    }
+    provide('reload', reload)
     watch(
       theme,
       name => {
         document.body.className = name
       },
-      { immediate: true }
+      {
+        immediate: true
+      }
     )
     return {
-      theme
+      isRouterAlive
     }
   }
 })
 </script>
+
 <style lang="scss">
 * {
   padding: 0;
   margin: 0;
 }
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -50,8 +61,26 @@ export default defineComponent({
 }
 
 #root {
-  min-height: 100vh;
   background: $body-bg;
   color: $text;
+  height: 100vh;
+  background-color: $body-bg;
+  color: $text;
+  box-sizing: border-box;
+  overflow-y: auto;
+  position: relative;
+  &.player-visible {
+    padding-bottom: $player-height;
+    .page-container {
+      bottom: $player-height;
+    }
+  }
+  .page-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+  }
 }
 </style>

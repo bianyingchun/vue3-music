@@ -39,7 +39,7 @@
 import { defineComponent, ref } from 'vue'
 import BottomPanel from '../widget/bottom-panel.vue'
 import { useStore } from 'vuex'
-import { GlobalState } from '@/typing'
+import { GlobalState } from '@/types'
 export default defineComponent({
   components: {
     BottomPanel

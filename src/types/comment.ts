@@ -1,3 +1,4 @@
+import { User } from './user'
 export interface CommentList {
   code: number
   data: {
@@ -20,7 +21,7 @@ export interface Comment {
   user: User
   beReplied: BeReplied[]
   pendantData?: PendantDatum
-  showFloorComment?: any
+  showFloorComment?: ShowFloorComment
   status: number
   commentId: number
   content: string
@@ -29,15 +30,17 @@ export interface Comment {
   expressionUrl?: any
   commentLocationType: number
   parentCommentId: number
-  decoration: Decoration
+  decoration: Record<string, any>
   repliedMark?: any
   liked: boolean
 }
-
-interface Decoration {
-  [props: string]: any
+interface ShowFloorComment {
+  replyCount: number
+  comments?: Comment
+  showReplyCount: boolean
+  topCommentIds?: number
+  target?: any
 }
-
 interface BeReplied {
   user: User
   beRepliedCommentId: number
@@ -49,39 +52,27 @@ interface PendantDatum {
   id: number
   imageUrl: string
 }
-export interface User {
-  locationInfo?: any
-  liveInfo?: any
-  anonym: number
-  userId: number
-  avatarDetail?: AvatarDetail
-  userType: number
-  remarkName?: any
-  vipRights?: VipRight
-  nickname: string
-  avatarUrl: string
-  authStatus: number
-  expertTags?: any
-  experts?: any
-  vipType: number
+
+export enum CommentType {
+  music = 0,
+  mv,
+  playlist,
+  album,
+  dj,
+  video
 }
 
-export interface VipRight {
-  associator?: Associator
-  musicPackage?: any
-  redVipAnnualCount: number
-  redVipLevel: number
-}
+export type CommentTypeNames = 'music' | 'mv' | 'album' | 'dj' | 'video'
 
-interface Associator {
-  vipCode: number
-  rights: boolean
+export interface FloorCommentData {
+  code: number
+  message: string
+  data: {
+    ownerComment: Comment
+    currentComment?: any
+    comments: Comment[]
+    hasMore: boolean
+    totalCount: number
+    time: number
+  }
 }
-
-interface AvatarDetail {
-  userType: number
-  identityLevel?: any
-  identityIconUrl: string
-}
-
-export type CommentType = 'music' | 'album' | 'dj' | 'video' | 'mv'

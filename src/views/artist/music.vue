@@ -13,7 +13,7 @@ import { defineComponent, ref } from 'vue'
 import { getSongList } from '@/common/api/artist'
 import SongList from '@/components/achive/song-list.vue'
 import { useRoute } from 'vue-router'
-import { Track } from '@/typing/playlist'
+import { Track } from '@/types'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { usePage } from '@/hooks/usePage'
 

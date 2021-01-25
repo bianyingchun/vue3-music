@@ -6,18 +6,46 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "7876854",
+      "name": "user",
+      "font_class": "user",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "5978743",
+      "name": "random-forest",
+      "font_class": "shuffle",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "10894836",
+      "name": "share",
+      "font_class": "share",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "7966326",
+      "name": "menu",
+      "font_class": "menu",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "11215263",
+      "name": "more",
+      "font_class": "more",
+      "unicode": "e700",
+      "unicode_decimal": 59136
+    },
+    {
       "icon_id": "13519309",
       "name": "back",
       "font_class": "back",
       "unicode": "e635",
       "unicode_decimal": 58933
-    },
-    {
-      "icon_id": "1857406",
-      "name": "shuffle",
-      "font_class": "shuffle",
-      "unicode": "e600",
-      "unicode_decimal": 58880
     },
     {
       "icon_id": "2466494",
@@ -67,13 +95,6 @@
       "font_class": "singer",
       "unicode": "e647",
       "unicode_decimal": 58951
-    },
-    {
-      "icon_id": "9095432",
-      "name": "menu",
-      "font_class": "menu",
-      "unicode": "e605",
-      "unicode_decimal": 58885
     },
     {
       "icon_id": "9358715",

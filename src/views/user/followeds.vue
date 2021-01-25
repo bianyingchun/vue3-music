@@ -15,7 +15,7 @@ import { useRoute } from 'vue-router'
 import { getFollowedList } from '@/common/api/user'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { usePage } from '@/hooks/usePage'
-import { User } from '@/typing'
+import { User } from '@/types'
 export default defineComponent({
   components: {
     UserList
