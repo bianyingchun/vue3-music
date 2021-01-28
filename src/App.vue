@@ -1,5 +1,9 @@
 <template>
-  <div id="root" :class="theme" v-if="isRouterAlive">
+  <div
+    id="root"
+    :class="[theme, { 'player-visible': playerVisible }]"
+    v-if="isRouterAlive"
+  >
     <keep-alive :max="10">
       <router-view :key="$route.fullPath"></router-view>
     </keep-alive>
@@ -21,9 +25,12 @@ export default defineComponent({
   },
   setup() {
     const store = useStore<GlobalState>()
-    // 检测登录状态
     const theme = computed(() => store.state.system.theme.current)
+    const playerVisible = computed(
+      () => !!store.getters['player/currentSong'].id
+    )
     provide('theme', theme)
+    // 检测登录状态
     store.dispatch('auth/checkLogin')
     const isRouterAlive = ref(true)
     function reload() {
@@ -41,6 +48,7 @@ export default defineComponent({
       }
     )
     return {
+      playerVisible,
       isRouterAlive
     }
   }

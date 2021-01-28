@@ -1,5 +1,5 @@
 <template>
-  <mix-page title="每日推荐" :bgPic="bgPic">
+  <mix-page title="每日推荐" :bgPic="bgPic" @play-all="playAll">
     <template #header>
       <div class="daily-recommend-info">
         <div class="time">
@@ -52,7 +52,11 @@ export default defineComponent({
       date: date.getDate(),
       month: date.getMonth() + 1
     }
+    function playAll() {
+      selectPlay(list.value || [], 0)
+    }
     return {
+      playAll,
       list,
       loading,
       selectPlay,

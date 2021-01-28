@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page-container page">
     <header>
       <div class="title-bar">
         <span class="iconfont icon-back" @click="$router.back()"></span>
@@ -30,7 +30,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .page {
-  height: 100vh;
   display: flex;
   flex-direction: column;
   background: $module-bg;

@@ -52,10 +52,6 @@ import ProfilePage from '@/components/achive/profile-page.vue'
 import { useNavSwiper } from '@/hooks/useNavSwiper'
 import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/swiper.scss'
-import 'swiper/components/navigation/navigation.scss'
-import 'swiper/components/pagination/pagination.scss'
-import 'swiper/components/scrollbar/scrollbar.scss'
 // install Swiper components
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
 import { showToast } from '@/plugin/toast'

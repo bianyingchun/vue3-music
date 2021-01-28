@@ -13,7 +13,7 @@
   // user-select: none;
 }
 
-body{
+body {
   background-color: #fff;
   color: #333;
 }
@@ -29,8 +29,14 @@ img {
   // -webkit-touch-callout: none;
   // pointer-events: none; // 像微信浏览器还是无法禁止，加上这行样式即可
 }
-body, button, input, keygen, legend, select, textarea {
-  font: $font-size Helvetica,sans-serif,STHeiTi;
+body,
+button,
+input,
+keygen,
+legend,
+select,
+textarea {
+  font: $font-size Helvetica, sans-serif, STHeiTi;
   color: $text;
   outline: 0;
   line-height: 1.5;
@@ -54,6 +60,9 @@ input {
     line-height: 40px;
     background-color: rgba(0, 0, 0, 0.1);
   }
+}
+input::placeholder {
+  color: #ccc;
 }
 button {
   text-align: center;
@@ -91,5 +100,3 @@ textarea {
 //   background: rgba(0, 0, 0, 0.1);
 //   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.15);
 // }
-
-

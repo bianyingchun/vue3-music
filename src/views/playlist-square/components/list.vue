@@ -33,7 +33,8 @@ export default defineComponent({
     tag: {
       type: String,
       default: '全部'
-    }
+    },
+    active: Boolean
   },
   components: {
     MixItem
@@ -87,10 +88,20 @@ export default defineComponent({
         }
       )
     }
+    watch(
+      () => props.active,
+      value => {
+        if (value && !list.value.length) {
+          getList()
+        }
+      },
+      {
+        immediate: true
+      }
+    )
 
     const refreshElm = ref<null | HTMLElement>(null)
     useLoadMore(refreshElm, getList)
-    getList()
     return {
       list,
       loading,

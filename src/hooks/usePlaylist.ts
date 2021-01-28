@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { Store } from 'vuex'
 import { GlobalState, Playlist, Track } from '@/types'
-import { showToast } from '@/plugin/toast'
 import { popup } from '@/plugin/popup'
 export function usePlaylist(store: Store<GlobalState>) {
   const playlist = computed(() => store.state.playlists.detail)
@@ -40,26 +39,26 @@ export function useMylist(store: Store<GlobalState>) {
   const favedList = computed(() => store.state.playlists.mine.faved)
   const likelist = computed(() => store.state.playlists.mine.likelist)
 
-  async function addTrack(pid: number, track: Track) {
-    const message = await store.dispatch('playlists/addTrack', {
+  function addTrack(pid: number, track: Track) {
+    store.dispatch('playlists/addTrack', {
       pid,
       track
     })
-    showToast(message || '已添加到到歌单')
+    // showToast(message || '已添加到到歌单')
   }
   async function deleteTrack(pid: number, track: Track) {
     await popup('确定将所选音乐从音乐列表中删除？')
-    const message = await store.dispatch('playlists/deleteTrack', {
+    await store.dispatch('playlists/deleteTrack', {
       pid,
       track
     })
 
-    showToast(message || '已从歌单中删除')
+    // showToast(message || '已从歌单中删除')
   }
   async function deletePlaylist(pid: number) {
     await popup('确定删除歌单？')
-    const message = await store.dispatch('playlists/deletePlaylist', pid)
-    showToast(message || '已删除歌单')
+    await store.dispatch('playlists/deletePlaylist', pid)
+    // showToast(message || '已删除歌单')
   }
   return {
     likelist,

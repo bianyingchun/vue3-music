@@ -1,5 +1,5 @@
 <template>
-  <div class="mix-container">
+  <div class="page-container mix-container" ref="container" @scroll="onScroll">
     <div class="title-bar">
       <div class="bg" :style="{ opacity: titleOpacity }">
         <div class="cover" :style="{ backgroundImage: `url(${bgPic})` }"></div>
@@ -15,7 +15,7 @@
       </div>
       <slot name="header"></slot>
       <div class="navbar" ref="navBarElm" :class="{ fixed: fixed }">
-        <div class="navbar-content">
+        <div class="navbar-content" @click="$emit('play-all')">
           <i class="iconfont icon-play"></i>
           <span>播放全部</span>
         </div>
@@ -28,22 +28,17 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-  onUnmounted,
-  nextTick,
-  onMounted,
-  computed
-} from 'vue'
+import { defineComponent, ref, nextTick, onMounted, computed } from 'vue'
 
 export default defineComponent({
   props: {
     title: String,
     bgPic: String
   },
+  emits: ['play-all'],
   setup(props) {
-    const navBarElm = ref<HTMLElement | null>(null)
+    const container = ref<HTMLDivElement | null>(null)
+    const navBarElm = ref<HTMLDivElement | null>(null)
     let offsetTop = 0
     const fixed = ref(false)
     const titleOpacity = ref(0)
@@ -51,27 +46,26 @@ export default defineComponent({
       return titleOpacity.value > 0.3 ? props.title : ''
     })
     function onScroll() {
-      const top = document.documentElement.scrollTop || document.body.scrollTop
-      fixed.value = top + 60 >= offsetTop
-      titleOpacity.value = Math.min(1, top / offsetTop)
+      if (container.value) {
+        const top = container.value.scrollTop
+        fixed.value = top + 60 >= offsetTop
+        titleOpacity.value = Math.min(1, top / offsetTop)
+      }
     }
     onMounted(async () => {
       nextTick(() => {
         if (navBarElm.value) {
           offsetTop = navBarElm.value.offsetTop
-          window.addEventListener('scroll', onScroll)
         }
       })
     })
-
-    onUnmounted(() => {
-      window.removeEventListener('scroll', onScroll)
-    })
     return {
+      container,
       navBarElm,
       fixed,
       titleOpacity,
-      slogan
+      slogan,
+      onScroll
     }
   }
 })
@@ -98,6 +92,7 @@ export default defineComponent({
   }
 }
 .mix-container {
+  overflow: auto;
   .title-bar {
     position: fixed;
     left: 0;

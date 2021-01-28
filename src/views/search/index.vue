@@ -13,7 +13,7 @@
               @input="onInput"
               @keypress.enter="onSearch"
             />
-            <i class="iconfont icon-close" v-if="query"></i>
+            <i class="iconfont icon-close" v-if="query" @click="query = ''"></i>
           </div>
         </div>
         <div class="suggest-list">
@@ -78,7 +78,7 @@ import { defineComponent, computed, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import _ from 'lodash'
 import { GlobalState, SearchDefault, HotSearchItem, SuggestItem } from '@/types'
-
+import { useRouter } from 'vue-router'
 import {
   getSearchHot,
   getSearchDefault,
@@ -95,6 +95,7 @@ export default defineComponent({
     const store = useStore<GlobalState>()
     const history = computed(() => store.state.search.history)
     const saveHistory = (query: string) => {
+      if (!query.trim()) return
       store.dispatch('search/saveSearchHistory', query)
     }
     const clearSearchHistory = () => {
@@ -164,6 +165,14 @@ export default defineComponent({
       query.value = value
       suggestList.value = []
     })
+    const router = useRouter()
+    function onBack() {
+      if (realQuery.value) {
+        realQuery.value = ''
+      } else {
+        router.back()
+      }
+    }
     return {
       query,
       onFocus,
@@ -178,7 +187,8 @@ export default defineComponent({
       defaultQuery,
       realQuery,
       onSearch,
-      onClickPage
+      onClickPage,
+      onBack
     }
   }
 })

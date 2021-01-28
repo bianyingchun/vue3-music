@@ -1,7 +1,6 @@
-import { ParsedLyricData } from './../../types/song'
 import { Module } from 'vuex'
 import { shuffle } from 'lodash'
-import { Track } from '@/types'
+import { Track, ParsedLyricData } from '@/types'
 import { PlayMode, PlayerState, GlobalState } from '@/types'
 import * as Types from '../action-types'
 import { loadPlay, savePlay } from '@/common/js/cache'

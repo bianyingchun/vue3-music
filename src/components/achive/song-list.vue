@@ -16,11 +16,11 @@
             >new</span
           >
           <span v-else-if="getUpdateRank(song, index).up" class="up">
-            <i class="iconfont icon-up">+</i>
+            <i class="iconfont icon-up">↑</i>
             {{ getUpdateRank(song, index).up }}
           </span>
           <span v-else-if="getUpdateRank(song, index).down" class="down">
-            <i class="iconfont icon-down">-</i>
+            <i class="iconfont icon-down">↓</i>
             {{ getUpdateRank(song, index).down }}
           </span>
           <span v-else>
@@ -29,7 +29,7 @@
           </span>
         </div>
       </div>
-      <img :src="song.al.picUrl" class="pic" v-else />
+      <img :src="song.al.picUrl" class="pic" v-else-if="song.al.picUrl" />
       <div class="content">
         <div class="name">
           {{ song.name }}
@@ -164,13 +164,13 @@ export default defineComponent({
   align-items: center;
   &.active {
     .rank {
-      color: red;
+      color: $primary;
     }
   }
   .rank {
-    width: 25px;
+    width: 30px;
     color: $text-secondary;
-    margin-right: $gap-lg;
+    margin-right: $gap;
     display: flex;
     flex-direction: column;
     justify-content: center;

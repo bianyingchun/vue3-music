@@ -21,6 +21,7 @@
           :is="item.type + '-list'"
           :active="index === navIndex"
           :query="query"
+          :key="query"
         ></component>
       </swiper-slide>
     </swiper>
@@ -30,7 +31,6 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/swiper.scss'
 import { useNavSwiper } from '@/hooks/useNavSwiper'
 import { SearchTypeVal } from '@/types'
 import TrackList from './track-list.vue'
@@ -60,7 +60,6 @@ export default defineComponent({
       onSlideChange,
       onToggleTab
     } = useNavSwiper(SEARCH_TYPES)
-    console.log(navList.value)
     return {
       navList,
       navIndex,
@@ -81,6 +80,7 @@ export default defineComponent({
     display: flex;
     white-space: nowrap;
     overflow-x: auto;
+    align-items: center;
     .nav-item {
       padding: $padding $padding-lx;
       position: relative;

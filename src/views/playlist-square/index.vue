@@ -22,9 +22,10 @@
         class="content"
         @swiper="setControlledSwiper"
       >
-        <swiper-slide v-for="item in navList" :key="item.name">
+        <swiper-slide v-for="(item, index) in navList" :key="item.name">
           <mix-list
             :name="item.name"
+            :active="index === navIndex"
             @showhq="toggleShowHqFilter(true)"
             :tag="hqTag"
           ></mix-list>
@@ -43,7 +44,6 @@ import { defineComponent, ref } from 'vue'
 import MixList from './components/list.vue'
 import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/swiper.scss'
 import 'swiper/components/navigation/navigation.scss'
 import 'swiper/components/pagination/pagination.scss'
 import 'swiper/components/scrollbar/scrollbar.scss'

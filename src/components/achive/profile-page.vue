@@ -1,9 +1,8 @@
 <template>
   <div
-    class="profile-page page-container"
-    v-if="userDetail || artist"
-    :ref="container"
-    @scroll="onScroll"
+    class="page-container profile-page"
+    ref="container"
+    @scroll.stop="onScroll"
   >
     <div class="title-bar">
       <div class="title-bg" :style="{ opacity: titleOpacity }"></div>
@@ -15,11 +14,14 @@
         }}
       </span>
     </div>
-    <div class="profile-bg" :ref="header">
-      <img :src="artist ? artist.picUrl : userDetail.profile.backgroundUrl" />
+    <div class="profile-bg" ref="header">
+      <img
+        :src="artist ? artist.picUrl : userDetail.profile.backgroundUrl"
+        v-if="userDetail || artist"
+      />
       <div class="mask"></div>
     </div>
-    <div class="profile-container">
+    <div class="profile-container" v-if="userDetail || artist">
       <div class="profile-header">
         <div class="profile-header-bg"></div>
         <img
@@ -108,6 +110,7 @@ export default defineComponent({
     let headerHeight = 0
     onMounted(() => {
       const node = header.value
+      console.log(node)
       if (node) {
         headerHeight = node.clientHeight
         const el = node.parentNode?.querySelector('.profile-header')
@@ -121,6 +124,7 @@ export default defineComponent({
         const ratio = parseFloat(
           Math.min(1, top / (headerHeight - 60)).toFixed(2)
         )
+        console.log(top, headerHeight)
         titleOpacity.value = ratio
         scrollable.value = ratio >= 0.99
       }
@@ -261,10 +265,8 @@ export default defineComponent({
       height: calc(100vh - 60px);
       display: flex;
       flex-direction: column;
-      &.unscrollable {
-        .scroller-container {
-          overflow: hidden;
-        }
+      &.unscrollable ::v-deep .scroller-container {
+        overflow: hidden;
       }
       .profile-swiper {
         flex: 1;

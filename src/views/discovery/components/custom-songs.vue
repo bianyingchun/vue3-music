@@ -54,7 +54,6 @@ import { defineComponent, PropType, ref } from 'vue'
 import { useStore } from 'vuex'
 import { Creative, Track, GlobalState } from '@/types'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/swiper.scss'
 import { usePlayMusic } from '@/hooks/usePlayer'
 import { transformTrack } from '@/common/js/music'
 export default defineComponent({

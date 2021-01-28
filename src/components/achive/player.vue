@@ -200,6 +200,8 @@ export default defineComponent({
           nextTick(() => {
             playSong(song)
           })
+        } else {
+          showPlayList.value = false
         }
       },
       {

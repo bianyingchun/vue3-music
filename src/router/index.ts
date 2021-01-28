@@ -5,34 +5,22 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
-    children: [
-      {
-        path: '/mine',
-        name: 'mine',
-        component: () => import('../views/mine/index.vue')
-      },
-      {
-        path: '/discovery',
-        name: 'discovery',
-        component: () => import('../views/discovery/index.vue')
-      }
-    ]
+    component: Home
   },
   {
-    path: '/discovery/recommend/taste',
+    path: '/taste',
     name: 'recommend-taste',
-    component: () => import('../views/discovery/recommend-taste.vue')
+    component: () => import('../views/recommend-taste/index.vue')
   },
   {
-    path: '/discovery/toplist',
+    path: '/toplist',
     name: 'toplist',
-    component: () => import('../views/discovery/toplist.vue')
+    component: () => import('../views/toplist/index.vue')
   },
   {
-    path: '/discovery/playlist',
+    path: '/playlist/square',
     name: 'playlist',
-    component: () => import('../views/discovery/playlist.vue')
+    component: () => import('../views/playlist-square/index.vue')
   },
   {
     path: '/playlist/:id',
@@ -45,7 +33,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/playlist/tags',
     name: 'playlist-tags',
-    component: () => import('../views/playlist/tags.vue')
+    component: () => import('../views/playlist-square/tags.vue')
   },
   {
     path: '/login',
@@ -65,17 +53,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/user/:id/followeds',
     name: 'user-followeds',
-    component: () => import('../views/user/followeds.vue')
+    component: () => import('../views/user-followeds/index.vue')
   },
   {
     path: '/user/:id/follows',
     name: 'user-follows',
-    component: () => import('../views/user/follows.vue')
+    component: () => import('../views/user-follows/index.vue')
   },
   {
     path: '/artists',
     name: 'artists',
-    component: () => import('../views/artist/list.vue')
+    component: () => import('../views/artist-list/index.vue')
   },
   {
     path: '/artist/:id',
@@ -85,7 +73,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/artist/:id/music',
     name: 'artist-music',
-    component: () => import('../views/artist/music.vue')
+    component: () => import('../views/artist-music/index.vue')
   },
   {
     path: '/search',

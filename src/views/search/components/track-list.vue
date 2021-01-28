@@ -64,8 +64,8 @@ export default defineComponent({
     useLoadMore(refreshElem, getList)
     watch(
       () => props.active,
-      () => {
-        if (!list.value.length) {
+      value => {
+        if (value && !list.value.length) {
           getList()
         }
       },

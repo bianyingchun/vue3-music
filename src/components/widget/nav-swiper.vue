@@ -32,7 +32,6 @@
 <script lang="ts">
 import { defineComponent, PropType, ref, Component } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/swiper.scss'
 export interface NavItem {
   name: string
   component: Component

@@ -4,6 +4,7 @@
     :title="playlist.name"
     :bgPic="playlist.coverImgUrl"
     v-if="playlist"
+    @play-all="playAll"
   >
     <template #header>
       <div class="playlist-container">
@@ -14,11 +15,15 @@
           ></div>
           <div class="content" v-if="playlist">
             <h3 class="title">{{ playlist.name }}</h3>
-            <div class="creator" v-if="playlist.creator">
+            <router-link
+              class="creator"
+              v-if="playlist.creator"
+              :to="`/user/ + ${playlist.creator.userId}`"
+            >
               <img :src="playlist.creator.avatarUrl" alt="" class="avatar" />
               <span class="nickname">{{ playlist.creator.nickname }}</span>
               <span class="iconfont icon-right"></span>
-            </div>
+            </router-link>
             <div class="desc">
               <div class="text">{{ playlist.description }}</div>
               <span class="iconfont icon-right"></span>
@@ -109,8 +114,12 @@ export default defineComponent({
       if (!isSelf.value) return
       await deleteTrack(id, track)
     }
+    function playAll() {
+      selectPlay(playlist.value?.tracks || [], 0)
+    }
     getDetail()
     return {
+      playAll,
       playlist,
       loading,
       selectPlay,
@@ -154,6 +163,7 @@ export default defineComponent({
       display: flex;
       align-items: center;
       margin-top: $gap-sm;
+      color: rgba(255, 255, 255, 0.7);
       .avatar {
         height: 30px;
         width: 30px;
@@ -169,7 +179,7 @@ export default defineComponent({
       display: flex;
       height: 36px;
       align-items: center;
-      color: $text-secondary;
+      color: rgba(255, 255, 255, 0.7);
       font-size: $font-size-sm;
       .text {
         flex: 1;
