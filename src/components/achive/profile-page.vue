@@ -54,7 +54,13 @@
           <div class="stat-list" v-else></div>
           <div
             class="action-box"
-            v-if="!(userDetail && account.id === userDetail.profile.userId)"
+            v-if="
+              !(
+                userDetail &&
+                account &&
+                account.id === userDetail.profile.userId
+              )
+            "
           >
             <button
               type="button"
@@ -110,7 +116,6 @@ export default defineComponent({
     let headerHeight = 0
     onMounted(() => {
       const node = header.value
-      console.log(node)
       if (node) {
         headerHeight = node.clientHeight
         const el = node.parentNode?.querySelector('.profile-header')
@@ -124,7 +129,6 @@ export default defineComponent({
         const ratio = parseFloat(
           Math.min(1, top / (headerHeight - 60)).toFixed(2)
         )
-        console.log(top, headerHeight)
         titleOpacity.value = ratio
         scrollable.value = ratio >= 0.99
       }

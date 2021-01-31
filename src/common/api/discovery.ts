@@ -8,28 +8,34 @@ import {
 } from '@/types'
 //首页-发现-圆形图标入口列表
 export async function getHomeBallList() {
-  const res = await request<any>('/homepage/dragon/ball', 'get')
-  const list = res.data.data.slice(0, 3)
-  return [
+  const ballList = [
     {
       id: 0,
-      icon: list[0].iconUrl as string,
+      icon: 'icon-canlendar',
       text: '每日推荐',
       url: '/taste'
     },
     {
       id: 1,
-      icon: list[1].iconUrl as string,
+      icon: 'icon-mix',
       text: '歌单',
       url: '/playlist/square'
     },
     {
       id: 2,
-      icon: list[2].iconUrl as string,
+      icon: 'icon-toplist',
       text: '排行榜',
       url: '/toplist'
     }
   ]
+  // const res = await request<any>('/homepage/dragon/ball', 'get')
+  // const list = res.data.data || []
+  // if (list.length > 2) {
+  //   ballList.forEach((item, index) => {
+  //     item.icon = list[index].iconUrl as string
+  //   })
+  // }
+  return ballList
 }
 
 //日推

@@ -5,8 +5,8 @@ import { loginByPhone, getAccount, logout } from '@/common/api/user'
 import { showToast } from '@/plugin/toast'
 const state: AuthState = {
   logined: false,
-  profile: undefined,
-  account: undefined,
+  profile: null,
+  account: null,
   isLogining: false,
   loginVisible: false,
   isLogouting: false
@@ -16,8 +16,8 @@ const authModule: Module<AuthState, GlobalState> = {
   state: state,
   mutations: {
     [Types.SET_ACCOUNT](state, payload: LoginStatus) {
-      state.account = payload.account
-      state.profile = payload.profile
+      state.account = payload.account || null
+      state.profile = payload.profile || null
       state.logined = !!payload.account
     },
     [Types.SET_LOGIN_VISIBLE](state, payload: boolean) {
@@ -42,18 +42,23 @@ const authModule: Module<AuthState, GlobalState> = {
           phone: payload.account,
           password: payload.password
         })
-        commit(Types.SET_ACCOUNT, res.data)
-        commit(Types.SET_LOGIN_VISIBLE, false)
-        const account = res.data.account
-        if (account) {
-          dispatch('playlists/fetchPlaylist', account.id, { root: true })
-          dispatch('playlists/fetchLikelistIds', account.id, { root: true })
+        if (res.data.code !== 200) {
+          showToast(res.data.message || res.data.msg || '登录失败')
+        } else {
+          commit(Types.SET_ACCOUNT, res.data)
+          commit(Types.SET_LOGIN_VISIBLE, false)
+          const account = res.data.account
+          if (account) {
+            dispatch('playlists/fetchPlaylist', account.id, { root: true })
+            dispatch('playlists/fetchLikelistIds', account.id, { root: true })
+          }
         }
-        return res
       } catch (err) {
+        console.log(err.response)
         showToast('登录失败')
         commit(Types.SET_ACCOUNT, {
-          account: null
+          account: null,
+          profile: null
         })
       } finally {
         commit(Types.SET_IS_LOGINING, false)

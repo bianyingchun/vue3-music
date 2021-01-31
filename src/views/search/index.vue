@@ -13,7 +13,7 @@
               @input="onInput"
               @keypress.enter="onSearch"
             />
-            <i class="iconfont icon-close" v-if="query" @click="query = ''"></i>
+            <i class="iconfont icon-close" v-if="query" @click="onClear"></i>
           </div>
         </div>
         <div class="suggest-list">
@@ -149,6 +149,10 @@ export default defineComponent({
     function onFocus() {
       fetchSuggest(query.value)
     }
+    function onClear() {
+      query.value = ''
+      suggestList.value = []
+    }
     function onInput() {
       fetchSuggest(query.value)
     }
@@ -188,7 +192,8 @@ export default defineComponent({
       realQuery,
       onSearch,
       onClickPage,
-      onBack
+      onBack,
+      onClear
     }
   }
 })
@@ -222,8 +227,12 @@ export default defineComponent({
         input {
           flex: 1;
           font-size: $font-size-lg;
-          color: rgba($color: #fff, $alpha: 0.7);
+          color: rgba($color: #fff, $alpha: 0.8);
+          &::placeholder {
+            color: rgba($color: #fff, $alpha: 0.4);
+          }
         }
+
         .iconfont {
           font-size: $font-size-lg;
           margin-left: $gap-lg;

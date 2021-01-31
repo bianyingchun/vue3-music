@@ -117,9 +117,9 @@
     </div>
     <audio
       ref="audio"
-      @error="onError"
-      @timeupdate="onUpdateTime"
-      @ended="onEnd"
+      @timeupdate="onUpdateTime()"
+      @error="onError()"
+      @ended="onEnd()"
       @play="onPlay()"
       @pause="onPause()"
     ></audio>

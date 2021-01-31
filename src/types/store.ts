@@ -8,7 +8,8 @@ import {
   Theme,
   ThemeItem,
   ParsedLyricData,
-  LoginStatus
+  Profile,
+  Account
 } from '.'
 export interface GlobalState {
   playlists: PlaylistsState
@@ -59,8 +60,11 @@ export interface SearchState {
   history: string[]
 }
 
-export interface AuthState extends LoginStatus {
+export interface AuthState {
+  logined: boolean
   loginVisible: boolean
   isLogining: boolean
   isLogouting: boolean
+  profile: Profile | null
+  account: Account | null
 }

@@ -21,10 +21,8 @@
         :key="index"
         :to="item.url"
       >
-        <div class="icon">
-          <img :src="item.icon" alt="" />
-        </div>
-        <div class="text">{{ item.text }}</div>
+        <div class="icon"><i class="iconfont" :class="item.icon"></i></div>
+        <span class="text">{{ item.text }}</span>
       </router-link>
     </div>
     <div class="block" v-if="homeData.rcmdPlaylist">
@@ -135,14 +133,15 @@ export default defineComponent({
         position: relative;
         overflow: hidden;
         display: inline-block;
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
         background: $link-bg;
         margin-bottom: $gap-sm;
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
+        .iconfont {
+          font-size: $font-size-lg;
+          color: #fff;
         }
       }
     }

@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "3092114",
+      "name": "排行榜",
+      "font_class": "paihangbang",
+      "unicode": "e782",
+      "unicode_decimal": 59266
+    },
+    {
       "icon_id": "7876854",
       "name": "user",
       "font_class": "user",

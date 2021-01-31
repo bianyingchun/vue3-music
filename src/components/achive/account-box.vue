@@ -1,11 +1,7 @@
 <template>
   <div className="account-box" @click="onClick">
     <img
-      :src="
-        profile
-          ? profile.avatarUrl
-          : 'https://profile.csdnimg.cn/4/A/E/0_weixin_39822244'
-      "
+      :src="profile ? profile.avatarUrl : defaultAvatar"
       className="avatar"
     />
     <div className="text">
@@ -23,6 +19,7 @@ import { defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { GlobalState } from '@/types'
 import { useAuth } from '@/hooks/useAuth'
+
 export default defineComponent({
   setup() {
     const router = useRouter()
@@ -37,7 +34,8 @@ export default defineComponent({
     }
     return {
       profile,
-      onClick
+      onClick,
+      defaultAvatar: require('@/assets/pics/avatar.png')
     }
   }
 })

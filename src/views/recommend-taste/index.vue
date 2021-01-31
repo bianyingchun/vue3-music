@@ -1,5 +1,9 @@
 <template>
-  <mix-page title="每日推荐" :bgPic="bgPic" @play-all="playAll">
+  <mix-page
+    title="每日推荐"
+    :bgPic="list.length ? list[0].al.picUrl : ''"
+    @play-all="playAll"
+  >
     <template #header>
       <div class="daily-recommend-info">
         <div class="time">
@@ -26,27 +30,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { getRecommendSongs } from '@/common/api/discovery'
 import { useStore } from 'vuex'
 import SongList from '@/components/achive/song-list.vue'
 import MixPage from '@/components/achive/mix-page.vue'
 import { Track, GlobalState } from '@/types'
 import { usePlayMusic } from '@/hooks/usePlayer'
+import { useAuth } from '@/hooks/useAuth'
 export default defineComponent({
   setup() {
     const list = ref<Track[]>([])
-    const loading = ref<boolean>(true)
     const store = useStore<GlobalState>()
+    const loading = ref<boolean>(true)
     const { selectPlay, currentSong } = usePlayMusic(store)
-    const bgPic = ref('')
-    onMounted(async () => {
+    async function getData() {
       loading.value = true
       const res = await getRecommendSongs()
       list.value = res
       loading.value = false
-      bgPic.value = res[0].al.picUrl
-    })
+    }
     const date = new Date()
     const time = {
       date: date.getDate(),
@@ -55,13 +58,27 @@ export default defineComponent({
     function playAll() {
       selectPlay(list.value || [], 0)
     }
+    const { account, toggleLoginBox } = useAuth(store)
+    if (!account.value) {
+      toggleLoginBox(true)
+    }
+    watch(
+      account,
+      value => {
+        if (value) {
+          getData()
+        } else {
+          list.value = []
+        }
+      },
+      { immediate: true }
+    )
     return {
       playAll,
       list,
       loading,
       selectPlay,
       currentSong,
-      bgPic,
       time
     }
   },

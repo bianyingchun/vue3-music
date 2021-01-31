@@ -18,7 +18,7 @@
             <router-link
               class="creator"
               v-if="playlist.creator"
-              :to="`/user/ + ${playlist.creator.userId}`"
+              :to="`/user/${playlist.creator.userId}`"
             >
               <img :src="playlist.creator.avatarUrl" alt="" class="avatar" />
               <span class="nickname">{{ playlist.creator.nickname }}</span>

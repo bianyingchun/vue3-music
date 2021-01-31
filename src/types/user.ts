@@ -1,9 +1,11 @@
 import { Playlist } from './playlist'
 import { Track } from './song'
 export interface LoginStatus {
-  logined: boolean
   profile?: Profile
   account?: Account
+  code: number
+  message?: string
+  msg: string
 }
 export interface Account {
   id: number

@@ -2,11 +2,15 @@
   <div class="login-wraper" v-if="showLogin">
     <span class="iconfont icon-back" @click="toggleLoginBox(false)"></span>
     <div class="icon">
-      <img src="@/assets/logo.png" alt="" />
+      <img src="@/assets/pics/logo.png" alt="" />
     </div>
     <div class="login-info">
-      <div class="form-item"><input type="text" v-model="phone" /></div>
-      <div class="form-item"><input type="password" v-model="password" /></div>
+      <div class="form-item">
+        <input type="text" v-model="phone" placeholder="账号" />
+      </div>
+      <div class="form-item">
+        <input type="password" v-model="password" placeholder="密码" />
+      </div>
       <div class="form-item">
         <button @click="login" class="login-btn" :disabled="islogining">
           一键登录
@@ -85,6 +89,9 @@ export default defineComponent({
         border: none;
         padding: 0 $padding-lg;
         box-sizing: border-box;
+      }
+      input {
+        background: rgba(255, 255, 255, 0.8);
       }
       .login-btn {
         background: #fff;
