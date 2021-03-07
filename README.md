@@ -126,7 +126,6 @@ export function useAuth(store: Store<GlobalState>) {
   };
 }
 ```
-![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7630a1ebf234440bb5c34f25165e1c9f~tplv-k3u1fbpfcp-watermark.image =300)
 <img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7630a1ebf234440bb5c34f25165e1c9f~tplv-k3u1fbpfcp-watermark.image" width="300px" alt="亮色主题">
 
 ### 个人中心
@@ -251,6 +250,7 @@ export function favTrackToMix(track: Track) {
 
 ### 歌手主页
 歌手主页和用户主页使用的是同一个布局组件，通过传入 slot 插槽, 呈现不同的主体。
+
 <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/404dba10e33c49288fd908601ae06229~tplv-k3u1fbpfcp-watermark.image" width="300px">
 
 ### 歌手分类
