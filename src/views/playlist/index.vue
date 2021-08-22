@@ -24,7 +24,7 @@
               <span class="nickname">{{ playlist.creator.nickname }}</span>
               <span class="iconfont icon-right"></span>
             </router-link>
-            <div class="desc">
+            <div class="desc" @click="showDetail = true">
               <div class="text">{{ playlist.description }}</div>
               <span class="iconfont icon-right"></span>
             </div>
@@ -76,6 +76,39 @@
       </song-list>
     </template>
   </mix-page>
+  <div class="playlist-detail-container" v-if="playlist && showDetail">
+    <div
+      class="bg"
+      :style="{ 'background-image': `url(${playlist.coverImgUrl})` }"
+    ></div>
+    <span class="close-btn" @click="showDetail = false">
+      <i class="iconfont icon-close"></i>
+    </span>
+    <div class="playlist-detail">
+      <div class="playlist-detail-header">
+        <div
+          class="cover"
+          :style="{ 'background-image': `url(${playlist.coverImgUrl})` }"
+        ></div>
+        <h4 class="title">{{ playlist.name }}</h4>
+      </div>
+      <div class="playlist-detail-content">
+        <div class="tag-list">
+          标签:
+          <span
+            class="tag-item"
+            v-for="(tag, index) in playlist.tags"
+            :key="index"
+          >
+            {{ tag }}
+          </span>
+        </div>
+        <div class="desc-detail">
+          {{ playlist.description }}
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -101,9 +134,11 @@ export default defineComponent({
       getPlaylistDetail,
       checkIsSelf
     } = usePlaylist(store)
+    const showDetail = ref(false)
     const { deleteTrack } = useMylist(store)
     async function getDetail() {
       loading.value = true
+      console.log(loading.value)
       await getPlaylistDetail(id)
       loading.value = false
     }
@@ -117,6 +152,7 @@ export default defineComponent({
     function playAll() {
       selectPlay(playlist.value?.tracks || [], 0)
     }
+
     getDetail()
     return {
       playAll,
@@ -126,7 +162,8 @@ export default defineComponent({
       currentSong,
       toggleSubscribe,
       isSelf,
-      unFavTrackToMix
+      unFavTrackToMix,
+      showDetail
     }
   },
   components: {
@@ -200,6 +237,66 @@ export default defineComponent({
     font-size: $font-size-sm;
     &.disabled {
       color: $gary;
+    }
+  }
+}
+.playlist-detail-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: $playlist-detail-index;
+  background: #000;
+  padding: 2 * $gap-lg;
+  overflow: auto;
+  .close-btn {
+    position: fixed;
+    right: $gap-lg;
+    top: $gap-lg;
+    .icon-close {
+      font-size: $font-size-lg;
+    }
+  }
+  .bg {
+    filter: blur(70px);
+    background-size: cover;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+  }
+  .playlist-detail-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: $gap-lg * 2;
+    .cover {
+      width: 220px;
+      height: 220px;
+      border-radius: $border-radius-lg;
+      background-size: cover;
+    }
+    .title {
+      margin: $gap-lg;
+    }
+  }
+  .playlist-detail-content {
+    font-size: $font-size-sm;
+    .tag-list {
+      margin-bottom: $gap-lg;
+      margin-right: -$gap-sm;
+      .tag-item {
+        background: rgba($color: #fff, $alpha: 0.1);
+        padding: 3px 10px;
+        border-radius: 15px;
+        margin-right: $gap-sm;
+      }
+    }
+    .desc-detail {
+      line-height: 2;
     }
   }
 }

@@ -13,7 +13,10 @@
   height: 30px;
   line-height: 30px;
   text-align: center;
-  background: $link-bg;
+  background: rgba(204, 204, 204, 20%);
+  &.active {
+    background: $primary;
+  }
 }
 
 .module-container {
@@ -97,4 +100,10 @@
   .more-btn {
     padding: $padding;
   }
+}
+
+.no-data {
+  padding: $gap-lg;
+  text-align: center;
+  color: $text-secondary;
 }

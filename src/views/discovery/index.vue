@@ -28,7 +28,7 @@
     <div class="block" v-if="homeData.rcmdPlaylist">
       <div class="block-header">
         <h3>{{ homeData.rcmdPlaylist.title }}</h3>
-        <router-link to="/discovery/playlist" class="block-btn"
+        <router-link to="/playlist/square" class="block-btn"
           >更多 <i class="iconfont icon-right"></i
         ></router-link>
       </div>
@@ -51,7 +51,7 @@
     <div class="block" v-if="homeData.officalPlaylist">
       <div class="block-header">
         <h3>{{ homeData.officalPlaylist.title }}</h3>
-        <router-link to="/discovery/playlist" class="block-btn"
+        <router-link to="/playlist/square" class="block-btn"
           >更多 <i class="iconfont icon-right"></i
         ></router-link>
       </div>

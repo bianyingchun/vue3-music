@@ -4,9 +4,14 @@
     :class="[theme, { 'player-visible': playerVisible }]"
     v-if="isRouterAlive"
   >
-    <keep-alive :max="10">
-      <router-view :key="$route.fullPath"></router-view>
-    </keep-alive>
+    <!-- <keep-alive>
+      <router-view></router-view>
+    </keep-alive> -->
+    <router-view v-slot="{ Component }">
+      <keep-alive>
+        <component :is="Component" :key="$route.fullPath" />
+      </keep-alive>
+    </router-view>
     <player />
     <login-box />
   </div>

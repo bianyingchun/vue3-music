@@ -1,5 +1,11 @@
 import request from './request'
-import { LyricData, ParsedLyricData, SongDetail } from '@/types'
+import {
+  LyricData,
+  ParsedLyricData,
+  SongDetail,
+  SimilarSongsData,
+  SimilarPlaylistsData
+} from '@/types'
 import { lyricParser } from '@/common/js/music'
 
 export async function getLyric(id: number | string) {
@@ -34,7 +40,19 @@ export async function getSongDetail(ids: number[]) {
 }
 
 export async function checkSong(id: number) {
-  return request<{ success: boolean; message: string }>('check/music', 'post', {
-    id
-  })
+  return request<{ success: boolean; message: string }>(
+    '/check/music',
+    'post',
+    {
+      id
+    }
+  )
+}
+
+export function getSimilarSongs(id: number) {
+  return request<SimilarSongsData>('/simi/song', 'get', { id })
+}
+
+export function getSimilarPlaylists(id: number) {
+  return request<SimilarPlaylistsData>('/simi/playlist', 'get', { id })
 }

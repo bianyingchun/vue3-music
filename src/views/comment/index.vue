@@ -31,6 +31,8 @@
           @delete="onDeleteParent(item)"
         ></comment-item>
       </div>
+      <div class="loading" v-if="loading">loading...</div>
+      <div class="no-data" v-else-if="!list.length">暂无评论</div>
     </div>
   </m-page>
   <comment-box

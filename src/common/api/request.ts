@@ -3,6 +3,7 @@ import store from '@/store'
 import { SET_LOGIN_VISIBLE } from '@/store/action-types'
 const instance = axios.create({ timeout: 1000 * 10 })
 instance.defaults.baseURL = 'http://localhost:3000'
+// instance.defaults.baseURL = 'http://music.bianyc.xyz:3000'
 instance.defaults.withCredentials = true
 instance.interceptors.request.use((config: AxiosRequestConfig) => {
   return config

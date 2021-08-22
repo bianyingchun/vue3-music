@@ -1,5 +1,5 @@
 import { Module } from 'vuex'
-import { shuffle } from 'lodash'
+import _ from 'lodash'
 import { Track, ParsedLyricData } from '@/types'
 import { PlayMode, PlayerState, GlobalState } from '@/types'
 import * as Types from '../action-types'
@@ -86,7 +86,7 @@ const playerModule: Module<PlayerState, GlobalState> = {
         return commit(Types.SET_PLAYER_SCREEN, true)
       commit(Types.SET_SEQUENCE_LIST, list)
       if (state.mode === PlayMode.random) {
-        const randomList = shuffle(list)
+        const randomList = _.shuffle(list)
         commit(Types.SET_PLAYLIST, randomList)
         index = findIndex(randomList, list[index])
       } else {
@@ -98,7 +98,7 @@ const playerModule: Module<PlayerState, GlobalState> = {
     randomPlay({ commit }, list: Track[]) {
       commit(Types.SET_PLAY_MODE, PlayMode.random)
       commit(Types.SET_SEQUENCE_LIST, list)
-      const randomList = shuffle(list)
+      const randomList = _.shuffle(list)
       commit(Types.SET_PLAYLIST, randomList)
       commit(Types.SET_CURRENT_INDEX, 0)
       commit(Types.SET_PLAYING_STATE, true)
@@ -193,7 +193,7 @@ const playerModule: Module<PlayerState, GlobalState> = {
     togglePlayMode({ commit, state }) {
       const mode = (state.mode + 1) % PLAY_MODE_LIST.length
       if (mode === PlayMode.random) {
-        const randomList = shuffle(state.playList)
+        const randomList = _.shuffle(state.playList)
         commit(Types.SET_PLAYLIST, randomList)
       }
       commit(Types.SET_PLAY_MODE, mode)

@@ -29,7 +29,11 @@
           </span>
         </div>
       </div>
-      <img :src="song.al.picUrl" class="pic" v-else-if="song.al.picUrl" />
+      <img
+        :src="song.al.picUrl"
+        class="pic"
+        v-else-if="song.al && song.al.picUrl"
+      />
       <div class="content">
         <div class="name">
           {{ song.name }}

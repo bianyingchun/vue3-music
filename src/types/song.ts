@@ -1,3 +1,4 @@
+import { Playlist } from './playlist'
 // specialType = 10 榜单
 import { Artist } from './artist'
 export interface TrackId {
@@ -249,4 +250,14 @@ interface ChargeInfoList {
 interface FreeTrialPrivilege {
   resConsumable: boolean
   userConsumable: boolean
+}
+
+export interface SimilarPlaylistsData {
+  playlists: Playlist[]
+  code: number
+}
+
+export interface SimilarSongsData {
+  songs: Track2[]
+  code: number
 }
