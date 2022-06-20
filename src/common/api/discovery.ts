@@ -45,7 +45,9 @@ export async function getRecommendSongs() {
 }
 
 export async function getHomePage() {
-  const res = await request<OriginHomePageData>('/homepage/block/page', 'get')
+  const res = await request<OriginHomePageData>('/homepage/block/page', 'get', {
+    timestamp: Date.now()
+  })
   if (res.data.code !== 200) return {}
   const data: HomePageData = {}
   const blocks = res.data.data.blocks
@@ -92,5 +94,8 @@ export async function getHomePage() {
 // 2: iphone
 // 3: ipad
 export function getBannerList() {
-  return request<BannerData>('/banner', 'get', { type: 1 })
+  return request<BannerData>('/banner', 'get', {
+    type: 1,
+    timestamp: Date.now()
+  })
 }

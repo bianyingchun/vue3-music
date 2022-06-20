@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container home">
+  <div class="page-container home" id="homePage">
     <div class="home-navbar">
       <siderbar />
       <div class="nav-container">
@@ -43,6 +43,7 @@ import Siderbar from './components/siderbar.vue'
 import { useNavSwiper } from '@/hooks/useNavSwiper'
 import Mine from '../mine/index.vue'
 import Discovery from '../discovery/index.vue'
+
 export default defineComponent({
   components: {
     Siderbar,
@@ -59,6 +60,7 @@ export default defineComponent({
       setControlledSwiper,
       navIndex
     } = useNavSwiper([{ name: '发现' }, { name: '我的' }])
+
     return {
       navIndex,
       navList,
@@ -74,6 +76,7 @@ export default defineComponent({
 .home {
   display: flex;
   flex-direction: column;
+  position: relative;
   .home-navbar {
     display: flex;
     align-items: center;
@@ -81,6 +84,7 @@ export default defineComponent({
     padding: 0 $padding-lg;
     color: #fff;
     background: $header-bg;
+    z-index: $home-navbar-index;
     .iconfont {
       color: #fff;
     }

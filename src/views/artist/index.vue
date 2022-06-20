@@ -21,11 +21,7 @@
       </div>
     </template>
     <template #default>
-      <swiper
-        @slideChange="onSlideChange"
-        class="content"
-        @swiper="setControlledSwiper"
-      >
+      <swiper @slideChange="onSlideChange" class="content" @swiper="setControlledSwiper">
         <swiper-slide key="detail">
           <artist-profile
             :userDetail="userDetail"
@@ -42,67 +38,64 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs } from 'vue'
-import { useRoute } from 'vue-router'
-import { getArtistProfile, followArtist } from '@/common/api/artist'
-import { getUserDetail, getUserPlaylist } from '@/common/api/user'
-import ArtistProfile from './components/artist-profile.vue'
-import TopMusic from './components/top-music.vue'
-import ProfilePage from '@/components/achive/profile-page.vue'
-import { useNavSwiper } from '@/hooks/useNavSwiper'
-import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/vue'
+import { defineComponent, onMounted, reactive, toRefs } from "vue";
+import { useRoute } from "vue-router";
+import { getArtistProfile, followArtist } from "@/common/api/artist";
+import { getUserDetail, getUserPlaylist } from "@/common/api/user";
+import ArtistProfile from "./components/artist-profile.vue";
+import TopMusic from "./components/top-music.vue";
+import ProfilePage from "@/components/achive/profile-page.vue";
+import { useNavSwiper } from "@/hooks/useNavSwiper";
+import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/vue";
 // install Swiper components
-SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
-import { showToast } from '@/plugin/toast'
+SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
+import { showToast } from "@/plugin/toast";
 export default defineComponent({
   components: {
     TopMusic,
     ArtistProfile,
     ProfilePage,
     Swiper,
-    SwiperSlide
+    SwiperSlide,
   },
   setup() {
-    const route = useRoute()
-    const id = Number(route.params.id)
+    const route = useRoute();
+    const id = Number(route.params.id);
     const state = reactive<any>({
       more: false,
       hotSongs: [],
       artist: null,
       userDetail: null,
-      playlist: null
-    })
+      playlist: null,
+    });
     async function onToggleFollow(followed: boolean) {
-      if (!state.artist) return
+      if (!state.artist) return;
       try {
-        const res = await followArtist(id, followed)
+        const res = await followArtist(id, followed);
         if (res.data.code === 200) {
-          const artist = state.artist
-          state.artist = { ...artist, followed }
+          const artist = state.artist;
+          state.artist = { ...artist, followed };
         } else {
-          showToast('关注失败')
+          showToast("关注失败");
         }
       } catch (err) {
-        showToast('关注失败')
+        showToast("关注失败");
       }
     }
     onMounted(async () => {
-      const res = await getArtistProfile(id)
-      const { more, hotSongs, artist } = res.data
-      state.more = more
-      state.hotSongs = hotSongs
-      state.artist = artist
-      const aid = res.data.artist.accountId
+      const res = await getArtistProfile(id);
+      const { more, hotSongs, artist } = res.data;
+      state.more = more;
+      state.hotSongs = hotSongs;
+      state.artist = artist;
+      const aid = res.data.artist.accountId;
       if (aid) {
-        const resArr = await Promise.all([
-          getUserDetail(aid),
-          getUserPlaylist(aid)
-        ])
-        state.userDetail = resArr[0].data
-        state.playlist = resArr[1]
+        const resArr = await Promise.all([getUserDetail(aid), getUserPlaylist(aid)]);
+        state.userDetail = resArr[0].data;
+        state.playlist = resArr[1];
       }
-    })
+    });
     // swiper
 
     const {
@@ -110,8 +103,8 @@ export default defineComponent({
       navIndex,
       onSlideChange,
       onToggleTab,
-      setControlledSwiper
-    } = useNavSwiper([{ name: '主页' }, { name: '热门歌曲' }])
+      setControlledSwiper,
+    } = useNavSwiper([{ name: "主页" }, { name: "热门歌曲" }]);
     return {
       ...toRefs(state),
       navList,
@@ -119,10 +112,10 @@ export default defineComponent({
       onSlideChange,
       onToggleTab,
       setControlledSwiper,
-      onToggleFollow
-    }
-  }
-})
+      onToggleFollow,
+    };
+  },
+});
 </script>
 <style lang="scss" scoped>
 .nav-container {
@@ -141,7 +134,7 @@ export default defineComponent({
         font-weight: 600;
         &::after {
           display: block;
-          content: '';
+          content: "";
           height: 2px;
           background: $primary;
           position: absolute;

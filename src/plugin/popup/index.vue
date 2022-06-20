@@ -12,20 +12,20 @@
   </modal>
 </template>
 
-<script>
-import Modal from '@/components/widget/modal.vue'
+<script lang="ts">
+import Modal from "@/components/widget/modal.vue";
 export default {
   props: {
     onCancel: Function,
     onEnsure: Function,
     hide: Function,
     text: String,
-    show: Boolean
+    show: Boolean,
   },
   components: {
-    Modal
-  }
-}
+    Modal,
+  },
+};
 </script>
 
 <style lang="scss" scoped>

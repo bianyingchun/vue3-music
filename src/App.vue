@@ -18,46 +18,44 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, provide, watch, ref, nextTick } from 'vue'
-import { useStore } from 'vuex'
-import { GlobalState } from './types'
-import Player from '@/components/achive/player.vue'
-import LoginBox from '@/components/achive/login.vue'
+import { computed, defineComponent, provide, watch, ref, nextTick } from "vue";
+import { useStore } from "vuex";
+import { GlobalState } from "./types";
+import Player from "@/components/achive/player.vue";
+import LoginBox from "@/components/achive/login.vue";
 export default defineComponent({
   components: {
     Player,
-    LoginBox
+    LoginBox,
   },
   setup() {
-    const store = useStore<GlobalState>()
-    const theme = computed(() => store.state.system.theme.current)
-    const playerVisible = computed(
-      () => !!store.getters['player/currentSong'].id
-    )
-    provide('theme', theme)
+    const store = useStore<GlobalState>();
+    const theme = computed(() => store.state.system.theme.current);
+    const playerVisible = computed(() => !!store.getters["player/currentSong"].id);
+    provide("theme", theme);
     // 检测登录状态
-    store.dispatch('auth/checkLogin')
-    const isRouterAlive = ref(true)
+    store.dispatch("auth/checkLogin");
+    const isRouterAlive = ref(true);
     function reload() {
-      isRouterAlive.value = false
-      nextTick(() => (isRouterAlive.value = true))
+      isRouterAlive.value = false;
+      nextTick(() => (isRouterAlive.value = true));
     }
-    provide('reload', reload)
+    provide("reload", reload);
     watch(
       theme,
-      name => {
-        document.body.className = name
+      (name) => {
+        document.body.className = name;
       },
       {
-        immediate: true
+        immediate: true,
       }
-    )
+    );
     return {
       playerVisible,
-      isRouterAlive
-    }
-  }
-})
+      isRouterAlive,
+    };
+  },
+});
 </script>
 
 <style lang="scss">

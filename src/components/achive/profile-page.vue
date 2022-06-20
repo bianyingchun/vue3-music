@@ -10,7 +10,7 @@
       <span class="title">
         {{
           (userDetail ? userDetail.profile.nickname : '') ||
-            (artist ? artist.name : '')
+          (artist ? artist.name : '')
         }}
       </span>
     </div>

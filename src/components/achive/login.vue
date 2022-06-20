@@ -12,35 +12,33 @@
         <input type="password" v-model="password" placeholder="密码" />
       </div>
       <div class="form-item">
-        <button @click="login" class="login-btn" :disabled="islogining">
-          一键登录
-        </button>
+        <button @click="login" class="login-btn" :disabled="islogining">一键登录</button>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
-import { useStore } from 'vuex'
-import { GlobalState } from '@/types'
-import { SET_LOGIN_VISIBLE } from '@/store/action-types'
+import { computed, defineComponent, ref } from "vue";
+import { useStore } from "vuex";
+import { GlobalState } from "@/types";
+import { SET_LOGIN_VISIBLE } from "@/store/action-types";
 export default defineComponent({
   setup() {
-    const phone = ref('')
-    const password = ref('')
-    const store = useStore<GlobalState>()
-    const islogining = computed(() => store.state.auth.isLogining)
+    const phone = ref("");
+    const password = ref("");
+    const store = useStore<GlobalState>();
+    const islogining = computed(() => store.state.auth.isLogining);
     const showLogin = computed(() => {
-      const { loginVisible, account } = store.state.auth
-      return !account && loginVisible
-    })
+      const { loginVisible, account } = store.state.auth;
+      return !account && loginVisible;
+    });
     const toggleLoginBox = (value: boolean) =>
-      store.commit(`auth/${SET_LOGIN_VISIBLE}`, value)
+      store.commit(`auth/${SET_LOGIN_VISIBLE}`, value);
     function login() {
-      store.dispatch('auth/login', {
+      store.dispatch("auth/login", {
         account: phone.value,
-        password: password.value
-      })
+        password: password.value,
+      });
     }
     return {
       islogining,
@@ -48,10 +46,10 @@ export default defineComponent({
       toggleLoginBox,
       phone,
       login,
-      password
-    }
-  }
-})
+      password,
+    };
+  },
+});
 </script>
 <style lang="scss" scoped>
 .login-wraper {

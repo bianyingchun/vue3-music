@@ -1,11 +1,13 @@
 <template>
-  <div class="discovery">
+  <div
+    class="discovery"
+    @touchstart="onTouchStart"
+    @touchmove="onTouchMove"
+    @touchend="onTouchEnd"
+    ref="container"
+  >
     <div class="banner">
-      <swiper
-        :autoplay="true"
-        :loop="true"
-        :pagination="{ el: '.swiper-pagination' }"
-      >
+      <swiper :autoplay="true" :loop="true" :pagination="{ el: '.swiper-pagination' }">
         <swiper-slide :key="index" v-for="(item, index) in banners">
           <div class="banner-item">
             <img :src="item.pic" alt="" />
@@ -58,52 +60,119 @@
       <rcmd-playlists :list="homeData.officalPlaylist.data"></rcmd-playlists>
     </div>
   </div>
+
+  <span
+    :class="['refresh-btn', { on: isRefreshing, off: !translateY }]"
+    :style="{ transform: `translateY(${translateY}px) rotate(${rotate}deg)` }"
+  >
+    <i class="iconfont icon-loop"></i>
+  </span>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import SwiperCore, { Scrollbar, Autoplay, Pagination } from 'swiper'
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import {
-  getHomePage,
-  getHomeBallList,
-  getBannerList
-} from '@/common/api/discovery'
-import { HomePageData, Ball, Banner } from '@/types'
-import CustomSong from './components/custom-songs.vue'
-import RcmdPlaylists from './components/rcmd-playlists.vue'
-SwiperCore.use([Scrollbar, Autoplay, Pagination])
+import { defineComponent, ref } from "vue";
+import SwiperCore, { Scrollbar, Autoplay, Pagination } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { getHomePage, getHomeBallList, getBannerList } from "@/common/api/discovery";
+import { HomePageData, Ball, Banner } from "@/types";
+import CustomSong from "./components/custom-songs.vue";
+import RcmdPlaylists from "./components/rcmd-playlists.vue";
+SwiperCore.use([Scrollbar, Autoplay, Pagination]);
+const refreshGap = 60;
+const maxTranslateY = 120;
+const perYDeg = 6;
 export default defineComponent({
   components: {
     CustomSong,
     RcmdPlaylists,
     Swiper,
-    SwiperSlide
+    SwiperSlide,
   },
+  // eslint-disable-next-line vue/no-setup-props-destructure
   setup() {
-    const homeData = ref<HomePageData>({})
-    const ballList = ref<Ball[]>([])
-    const banners = ref<Banner[]>([])
+    const homeData = ref<HomePageData>({});
+    const ballList = ref<Ball[]>([]);
+    const banners = ref<Banner[]>([]);
     async function getDiscoveryData() {
-      const res = await Promise.all([getHomePage(), getHomeBallList()])
-      homeData.value = res[0]
-      ballList.value = res[1]
+      const res = await Promise.all([getHomePage(), getHomeBallList()]);
+      homeData.value = res[0];
+      ballList.value = res[1];
     }
     async function getBanners() {
-      const res = await getBannerList()
+      const res = await getBannerList();
       if (res.data.code === 200) {
-        banners.value = res.data.banners
+        banners.value = res.data.banners;
       }
     }
-    getDiscoveryData()
-    getBanners()
+
+    const touch = {
+      initialed: false,
+      startY: 0,
+      startX: 0,
+      diffY: 0,
+    };
+    const isRefreshing = ref(false);
+    const container = ref<null | HTMLDivElement>(null);
+    const translateY = ref(0);
+    const rotate = ref(0);
+
+    async function refresh() {
+      isRefreshing.value = true;
+      await Promise.all([getDiscoveryData(), getBanners()]);
+      isRefreshing.value = false;
+      translateY.value = 0;
+      rotate.value = 0;
+    }
+
+    const onTouchStart = (e: TouchEvent) => {
+      const el = container.value;
+      if (!el || el.scrollTop || isRefreshing.value) return;
+      touch.initialed = true;
+      touch.startY = e.touches[0].pageY;
+      touch.startX = e.touches[0].pageX;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!touch.initialed || isRefreshing.value) return;
+      const el = container.value?.parentElement;
+      if (!el || el?.scrollTop) return;
+      const { pageY } = e.touches[0];
+      // const diffX = pageX - touch.startX
+      const diffY = pageY - touch.startY;
+      if (diffY > 0) {
+        touch.diffY = diffY;
+        translateY.value = Math.min(diffY, maxTranslateY);
+        rotate.value = parseInt((perYDeg * translateY.value).toFixed(2));
+      } else {
+        touch.diffY = 0;
+      }
+    };
+    const onTouchEnd = () => {
+      const el = container.value?.parentElement;
+      if (!el || isRefreshing.value) return;
+      if (touch.diffY >= refreshGap) {
+        refresh();
+      } else {
+        translateY.value = 0;
+        rotate.value = 0;
+      }
+      touch.initialed = false;
+    };
+    refresh();
     return {
       ballList,
       homeData,
-      banners
-    }
-  }
-})
+      banners,
+      onTouchMove,
+      onTouchStart,
+      onTouchEnd,
+      isRefreshing,
+      container,
+      translateY,
+      rotate,
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>
@@ -171,5 +240,35 @@ export default defineComponent({
 }
 .swiper-pagination ::v-deep .swiper-pagination-bullet-active {
   background: #fff;
+}
+.refresh-btn {
+  background: $module-bg;
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  position: absolute;
+  top: -50px;
+  left: calc(50% - 20px);
+  color: $text;
+  z-index: $refresh-btn-index;
+  font-weight: bold;
+  text-align: center;
+  line-height: 40px;
+  &.off {
+    transition: 0.3s linear all;
+  }
+  &.on {
+    animation: rotate 1s linear infinite;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: translateY(60px) rotate(0);
+  }
+
+  100% {
+    transform: translateY(60px) rotate(360deg);
+  }
 }
 </style>

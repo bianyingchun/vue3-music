@@ -12,10 +12,7 @@
         <div class="like-count" :class="{ active: comment.liked }">
           <span class="count">{{ comment.likedCount }}</span>
           <span
-            :class="[
-              'iconfont',
-              comment.liked ? 'icon-like-fill' : 'icon-like'
-            ]"
+            :class="['iconfont', comment.liked ? 'icon-like-fill' : 'icon-like']"
             @click="$emit('toggle-like', comment.commentId, !comment.liked)"
           ></span>
         </div>
@@ -31,8 +28,8 @@
         class="reply-count"
         v-if="
           !hideReplyCount &&
-            comment.showFloorComment &&
-            comment.showFloorComment.replyCount
+          comment.showFloorComment &&
+          comment.showFloorComment.replyCount
         "
       >
         {{ comment.showFloorComment.replyCount }}条回复
@@ -41,9 +38,7 @@
       <div class="replied-content" v-if="showFloorComment(comment)">
         <div v-if="comment.beReplied[0].status">评论已删除</div>
         <div v-else>
-          <router-link
-            :to="`/user/${comment.beReplied[0].user.userId}`"
-            class="nickname"
+          <router-link :to="`/user/${comment.beReplied[0].user.userId}`" class="nickname"
             >@{{ comment.beReplied[0].user.nickname }}</router-link
           >
           :{{ comment.beReplied[0].content }}
@@ -54,66 +49,66 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
-import { useStore } from 'vuex'
-import { GlobalState, Comment } from '@/types'
-import { formatTime } from '@/common/js/util'
-import { useAuth } from '@/hooks/useAuth'
-import { showToolTips } from '@/plugin/tool-tip'
-import { popup } from '@/plugin/popup'
+import { computed, defineComponent, PropType } from "vue";
+import { useStore } from "vuex";
+import { GlobalState, Comment } from "@/types";
+import { formatTime } from "@/common/js/util";
+import { useAuth } from "@/hooks/useAuth";
+import { showToolTips } from "@/plugin/tool-tip";
+import { popup } from "@/plugin/popup";
 export default defineComponent({
   props: {
     comment: Object as PropType<Comment>,
     parentCommentId: Number,
-    hideReplyCount: Boolean
+    hideReplyCount: Boolean,
   },
-  emits: ['show-floor', 'reply', 'delete', 'toggle-like'],
+  emits: ["show-floor", "reply", "delete", "toggle-like"],
   setup(props, { emit }) {
-    const store = useStore<GlobalState>()
-    const { account, toggleLoginBox } = useAuth(store)
+    const store = useStore<GlobalState>();
+    const { account, toggleLoginBox } = useAuth(store);
     const toolList = computed(() => {
-      if (!account.value || !props.comment) return []
+      if (!account.value || !props.comment) return [];
       const list = [
         {
-          title: '回复评论',
+          title: "回复评论",
           action() {
-            emit('reply')
-          }
-        }
-      ]
+            emit("reply");
+          },
+        },
+      ];
       account.value.id === props.comment.user.userId &&
         list.push({
-          title: '删除评论',
+          title: "删除评论",
           action() {
-            popup('确认删除该条评论？')
+            popup("确认删除该条评论？")
               .then(() => {
-                emit('delete')
+                emit("delete");
               })
-              .catch(() => console.log('canceled'))
-          }
-        })
-      return list
-    })
+              .catch(() => console.log("canceled"));
+          },
+        });
+      return list;
+    });
     function onTriggerToolbar() {
       if (!account.value) {
-        return toggleLoginBox(true)
+        return toggleLoginBox(true);
       }
-      showToolTips(toolList.value)
+      showToolTips(toolList.value);
     }
     function showFloorComment(comment: Comment) {
       return (
         comment.beReplied &&
         comment.beReplied.length &&
         !(comment.beReplied[0].beRepliedCommentId === props.parentCommentId)
-      )
+      );
     }
     return {
       formatTime,
       showFloorComment,
-      onTriggerToolbar
-    }
-  }
-})
+      onTriggerToolbar,
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

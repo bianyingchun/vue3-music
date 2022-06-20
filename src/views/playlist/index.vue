@@ -128,12 +128,8 @@ export default defineComponent({
     const id = Number(route.params.id)
     const store = useStore<GlobalState>()
     const { selectPlay, currentSong } = usePlayMusic(store)
-    const {
-      playlist,
-      toggleSubscribe,
-      getPlaylistDetail,
-      checkIsSelf
-    } = usePlaylist(store)
+    const { playlist, toggleSubscribe, getPlaylistDetail, checkIsSelf } =
+      usePlaylist(store)
     const showDetail = ref(false)
     const { deleteTrack } = useMylist(store)
     async function getDetail() {
