@@ -6,7 +6,7 @@ const instance = axios.create({ timeout: 1000 * 10 })
 
 const host = window.location.host
 instance.defaults.baseURL =
-  host == 'music.bianyc.zyx'
+  host == 'music.bianyc.xyz'
     ? 'http://music.bianyc.xyz:3000'
     : 'http://localhost:3000'
 
