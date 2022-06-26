@@ -18,16 +18,16 @@ export default defineConfig({
         },
       ],
     }),
-    compress(
-      //生成压缩包gz
-      {
-        verbose: true,
-        disable: false,
-        threshold: 10240,
-        algorithm: "gzip",
-        ext: ".gz",
-      }
-    ),
+    // compress(
+    //   //生成压缩包gz
+    //   {
+    //     verbose: true,
+    //     disable: false,
+    //     threshold: 10240,
+    //     algorithm: "gzip",
+    //     ext: ".gz",
+    //   }
+    // ),
     visualizer(),
   ],
   resolve: {
@@ -48,15 +48,10 @@ export default defineConfig({
     https: false, // https:{type:Boolean}
     open: true, //配置自动启动浏览器
   },
+  base: "./",
   build: {
-    terserOptions: {
-      chunkSizeWarningLimit: 500,
-      minify: "terser",
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    // minify: "esbuild",
+    // chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
         manualChunks: {
