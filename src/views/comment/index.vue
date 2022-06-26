@@ -46,6 +46,7 @@
       :parentComment="floorComment"
       :id="sourceId"
       :type="sourceType"
+      @hide="setFloorCommentIndex(-1)"
       @delete-parent="onDeleteParent(floorComment)"
       @delete-reply="updateCountOnDeleteComment($event, floorComment)"
       @add-reply="updateCountOnAddComment(floorComment)"

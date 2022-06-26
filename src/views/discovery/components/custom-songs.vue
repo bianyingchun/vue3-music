@@ -51,8 +51,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue'
-import { useStore } from 'vuex'
-import { Creative, Track, GlobalState } from '@/types'
+import { Creative, Track } from '@/types'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { usePlayMusic } from '@/hooks/usePlayer'
 import { transformTrack } from '@/common/js/music'
@@ -65,8 +64,7 @@ export default defineComponent({
     SwiperSlide
   },
   setup(props) {
-    const store = useStore<GlobalState>()
-    const { currentSong, selectPlay, playing } = usePlayMusic(store)
+    const { currentSong, selectPlay, playing } = usePlayMusic()
     const list = ref<Track[]>([])
     if (props.creatives) {
       props.creatives.forEach(item => {

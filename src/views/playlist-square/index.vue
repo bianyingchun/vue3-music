@@ -13,7 +13,11 @@
             {{ item.name }}
           </div>
         </div>
-        <div class="more-btn">more</div>
+        <div class="more-btn">
+          <router-link to="/playlist/tags">
+            <i class="iconfont icon-app"></i>
+          </router-link>
+        </div>
       </div>
     </template>
     <template #default>
@@ -40,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import MixList from './components/list.vue'
 import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/vue'
@@ -48,6 +52,7 @@ import 'swiper/components/navigation/navigation.scss'
 import 'swiper/components/pagination/pagination.scss'
 import 'swiper/components/scrollbar/scrollbar.scss'
 import HqtagFilter from './components/hqtag-filter.vue'
+import usePlaylistsStore from '@/store/playlists'
 // install Swiper components
 SwiperCore.use([Navigation, Pagination, Scrollbar, A11y])
 
@@ -61,15 +66,8 @@ export default defineComponent({
   setup() {
     const swiper = ref(null)
     const navIndex = ref(0)
-    const navList = ref([
-      { name: '推荐' },
-      { name: '官方' },
-      { name: '精品' },
-      { name: '流行' },
-      { name: '轻音乐' },
-      { name: '电子' },
-      { name: '韩语' }
-    ])
+    const store = usePlaylistsStore()
+    const navList = computed(() => store.squareTags)
     function onSlideChange(swiper: any) {
       navIndex.value = swiper.activeIndex
     }

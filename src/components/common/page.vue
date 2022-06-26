@@ -2,7 +2,7 @@
   <div class="page-container page">
     <header>
       <div class="title-bar">
-        <span class="iconfont icon-back" @click="$router.back()"></span>
+        <span class="iconfont icon-back" @click="handleClickBack"></span>
         <span class="title">
           {{ title || '' }}
         </span>
@@ -20,10 +20,27 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-
+import { useRouter } from 'vue-router'
 export default defineComponent({
   props: {
-    title: String
+    title: String,
+    onClickBack: {
+      type: Function,
+      required: false
+    }
+  },
+  setup(props) {
+    const router = useRouter()
+    function handleClickBack() {
+      if (props.onClickBack) {
+        props.onClickBack()
+      } else {
+        router.back()
+      }
+    }
+    return {
+      handleClickBack
+    }
   }
 })
 </script>

@@ -1,6 +1,7 @@
 <template>
   <m-page
     :title="`回复(${parentComment.showFloorComment.replyCount})`"
+    :onClickBack="()=>$emit('hide')"
     class="reply-page"
   >
     <div class="reply-list-container" ref="refreshElm">
@@ -52,7 +53,13 @@ export default defineComponent({
     type: Number as PropType<CommentType>,
     parentComment: Object as PropType<Comment>
   },
-  emits: ['toggle-like-parent', 'delete-parent', 'add-reply', 'delete-reply'],
+  emits: [
+    'toggle-like-parent',
+    'delete-parent',
+    'add-reply',
+    'delete-reply',
+    'hide'
+  ],
   components: {
     CommentItem,
     CommentBox
@@ -120,6 +127,7 @@ export default defineComponent({
       }
       return res
     }
+
     return {
       list,
       loading,

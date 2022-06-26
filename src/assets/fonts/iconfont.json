@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "160247",
+      "name": "refresh",
+      "font_class": "shuaxin",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "971577",
+      "name": "火焰",
+      "font_class": "weibiaoti1",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "1305489",
+      "name": "app",
+      "font_class": "app",
+      "unicode": "e644",
+      "unicode_decimal": 58948
+    },
+    {
       "icon_id": "3092114",
       "name": "排行榜",
       "font_class": "paihangbang",

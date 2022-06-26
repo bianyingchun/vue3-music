@@ -40,6 +40,7 @@
           <span v-if="song.alia.length">({{ song.alia[0] }})</span>
         </div>
         <div class="desc">
+          <span class="track-tag-item vip" v-if="song.fee == 1">VIP</span>
           <span class="singer-album">{{
             getSingerName(song) + '-' + song.al.name
           }}</span>
@@ -220,6 +221,21 @@ export default defineComponent({
       @include text-overflow();
       color: $text-secondary;
       font-size: $font-size-xs;
+      .track-tag-item {
+        display: inline-block;
+        padding: 1px;
+        border: 1px solid;
+        line-height: 1;
+        font-size: $font-size-xs;
+        border-radius: 4px;
+        margin-right: $gap-xs;
+        padding: 2px;
+        transform: scale(0.8);
+        &.vip {
+          color: orange;
+          border-color: orange;
+        }
+      }
     }
   }
   .tools {

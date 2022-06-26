@@ -103,8 +103,8 @@ export function useCommentList(
       commentText.value = ''
       setReplyTarget(null)
     } catch (err) {
-      if (err.response.status === 405) {
-        showToast(err.response.data.message || '请求过于频繁')
+      if ((err as any).response.status === 405) {
+        showToast((err as any).response.data.message || '请求过于频繁')
       } else {
         showToast('请求失败')
       }

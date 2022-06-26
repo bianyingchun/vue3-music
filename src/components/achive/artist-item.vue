@@ -15,6 +15,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { Artist } from '@/types'
+
 export default defineComponent({
   props: {
     artist: Object as PropType<Artist>

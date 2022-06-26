@@ -75,9 +75,8 @@
 
 <script lang="ts">
 import { defineComponent, computed, ref, watch } from 'vue'
-import { useStore } from 'vuex'
-import _ from 'lodash'
-import { GlobalState, SearchDefault, HotSearchItem, SuggestItem } from '@/types'
+import { debounce } from 'lodash'
+import { SearchDefault, HotSearchItem, SuggestItem } from '@/types'
 import { useRouter } from 'vue-router'
 import {
   getSearchHot,
@@ -86,25 +85,25 @@ import {
 } from '@/common/api/search'
 import SearchResult from './components/result.vue'
 import { popup } from '@/plugin/popup'
-
+import useSearchStore from '@/store/search'
 export default defineComponent({
   components: {
     SearchResult
   },
   setup() {
-    const store = useStore<GlobalState>()
-    const history = computed(() => store.state.search.history)
+    const store = useSearchStore()
+    const history = computed(() => store.history)
     const saveHistory = (query: string) => {
       if (!query.trim()) return
-      store.dispatch('search/saveSearchHistory', query)
+      store.saveSearchHistory(query)
     }
     const clearSearchHistory = () => {
       popup('确认清空所有记录吗').then(() => {
-        store.dispatch('search/clearSearchHistory')
+        store.clearSearchHistory()
       })
     }
     const deleteSearchHistory = (query: string) =>
-      store.dispatch('search/deleteSearchHistory', query)
+      store.deleteSearchHistory(query)
 
     const hotList = ref<HotSearchItem[]>([])
     async function fetchHotList() {
@@ -128,7 +127,7 @@ export default defineComponent({
     fetchDefaultQuery()
 
     const suggestList = ref<SuggestItem[]>([])
-    const fetchSuggest = _.debounce(async (value: string) => {
+    const fetchSuggest = debounce(async (value: string) => {
       try {
         if (value) {
           const res = await getSearchSuggest(value)
@@ -226,7 +225,7 @@ export default defineComponent({
         border-bottom: 1px solid $gary;
         input {
           flex: 1;
-          font-size: $font-size-lg;
+          font-size: $font-size-mx;
           color: rgba($color: #fff, $alpha: 0.8);
           &::placeholder {
             color: rgba($color: #fff, $alpha: 0.4);

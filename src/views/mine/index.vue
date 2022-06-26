@@ -42,7 +42,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useStore } from 'vuex'
 import MixItem from '@/components/achive/tiny-mix-item.vue'
 import ToolPanel from '@/components/achive/tool-panel.vue'
 import AddMix from '@/components/achive/create-playlist.vue'
@@ -58,11 +57,8 @@ export default defineComponent({
     AccountBox
   },
   setup() {
-    const store = useStore<GlobalState>()
-    const { checkIsSelf, toggleSubscribe } = usePlaylist(store)
-    const { deletePlaylist, createdList, likelist, favedList } = useMylist(
-      store
-    )
+    const { checkIsSelf, toggleSubscribe } = usePlaylist()
+    const { deletePlaylist, createdList, likelist, favedList } = useMylist()
     function getTools(playlist: Playlist) {
       const isSelf = checkIsSelf(playlist)
       const list = []

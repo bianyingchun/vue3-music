@@ -1,7 +1,10 @@
-import { computed, ref, nextTick } from 'vue'
-import { GlobalState, PlayMode, Track } from '@/types'
-import { Store } from 'vuex'
-import * as Types from '@/store/action-types'
+import { computed, ref, nextTick, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+
+import usePlayerStore from '@/store/player'
+import usePlaylistsStore from '@/store/playlists'
+import useAuthStore from '@/store/auth'
+import { PlayMode, Track } from '@/types'
 import { showToast } from '@/plugin/toast'
 import { checkSong } from '@/common/api/song'
 import { popup } from '@/plugin/popup'
@@ -10,42 +13,55 @@ function getSource(id: number) {
   return `https://music.163.com/song/media/outer/url?id=${id}.mp3`
 }
 
-export function usePlayer(store: Store<GlobalState>) {
+export function usePlayer() {
   const audio = ref<HTMLAudioElement | null>(null)
-  const currentSong = computed<Track>(() => store.getters['player/currentSong'])
-  const playList = computed(() => store.state.player.playList)
-  const sequenceList = computed(() => store.state.player.sequenceList)
+
+  const store = usePlayerStore()
+  const {
+    currentIndex,
+    currentSong,
+    sequenceList,
+    playList,
+    playing,
+    currentTime,
+    lyric,
+    mode,
+    currentMode,
+    currentLyric,
+    fullScreen
+  } = storeToRefs(store)
+  watch(
+    () => currentIndex.value,
+    () => {
+      console.log('------', currentIndex.value)
+    }
+  )
   const singerName = computed(() =>
     currentSong.value.ar.map((item: any) => item.name).join('/')
   )
+  const playlistStore = usePlaylistsStore()
   // like
   const isliked = computed(() => {
-    const likelist = store.state.playlists.mine.likelistIds
+    const likelist = playlistStore.mine.likelistIds
     if (!likelist) return
     return likelist.indexOf(currentSong.value.id) !== -1
   })
   function toggleLike(like: boolean) {
-    return store.dispatch('playlists/toggleLikeSong', {
+    return playlistStore.toggleLikeSong({
       id: currentSong.value.id,
       like
     })
   }
-  // add to /remove from  playlist
-  const playing = computed(() => store.state.player.playing)
-  function setPlaying(value: boolean) {
-    store.commit('player/' + Types.SET_PLAYING_STATE, value)
-  }
-  const currentTime = computed(() => store.state.player.currentTime)
+
   const percent = computed(() => {
     const t = currentTime.value / currentSong.value.dt
     return t
   })
   const cachePercent = ref(0)
-
   function onUpdateTime() {
     const element = audio.value
     if (element) {
-      store.dispatch('player/updateTime', element.currentTime * 1000)
+      store.updateTime(element.currentTime * 1000)
       if (element.buffered.length) {
         const cacheTime = element.buffered.end(element.buffered.length - 1)
         cachePercent.value = (cacheTime * 10000) / (element.duration * 10000)
@@ -61,14 +77,15 @@ export function usePlayer(store: Store<GlobalState>) {
   function onPercentChange(value: number) {
     const t = currentSong.value.dt * value
     setTime(t / 1000)
-    store.dispatch('player/updateTime', t)
+    store.updateTime(t)
   }
-  const lyric = computed(() => store.state.player.lyric)
+
   function pause() {
     const element = audio.value as HTMLAudioElement
     element.pause()
   }
-  const account = computed(() => store.state.auth.account)
+  const authStore = useAuthStore()
+  const account = authStore.account
   function play() {
     const element = audio.value
     if (currentSong.value.id && element) {
@@ -81,7 +98,7 @@ export function usePlayer(store: Store<GlobalState>) {
             })
             .catch(async () => {
               // 音频加载失败
-              if (currentSong.value.fee === 1 && !account.value?.paidFee) {
+              if (currentSong.value.fee === 1 && !account?.paidFee) {
                 showToast('开通 vip 畅听')
                 return pause()
               }
@@ -100,22 +117,22 @@ export function usePlayer(store: Store<GlobalState>) {
   function playSong(song: Track) {
     const element = audio.value as HTMLAudioElement
     element.src = getSource(song.id)
-    store.dispatch('player/fetchLyric', song.id)
+    store.fetchLyric(song.id)
     play()
   }
-  const mode = computed(() => store.getters['player/currentMode'])
+
   function changeMode() {
-    store.dispatch('player/togglePlayMode')
+    store.togglePlayMode()
   }
 
   function next() {
     setTime(0)
-    store.dispatch('player/playNext')
+    store.playNext()
   }
 
   function prev() {
     setTime(0)
-    store.dispatch('player/playPrev')
+    store.playPrev()
   }
   function loop() {
     setTime(0)
@@ -130,14 +147,14 @@ export function usePlayer(store: Store<GlobalState>) {
   }
 
   function _savePlayHistory() {
-    store.dispatch('player/savePlayHistory', currentSong.value)
+    store.savePlayHistory(currentSong.value)
   }
 
   function onPause() {
-    setPlaying(false)
+    store.playing = false
   }
   function onPlay() {
-    setPlaying(true)
+    store.playing = true
     _savePlayHistory()
   }
   function togglePlay() {
@@ -148,15 +165,15 @@ export function usePlayer(store: Store<GlobalState>) {
     }
   }
   function setCurrentSong(song: Track) {
-    store.dispatch('player/playSong', song)
+    store.playSong(song)
   }
   function deleteSong(song: Track) {
-    store.dispatch('player/deleteSong', song)
+    store.deleteSong(song)
   }
   function clearSong() {
     popup('确认清空播放列表？')
       .then(() => {
-        store.dispatch('player/clear')
+        store.clear()
       })
       .catch()
   }
@@ -165,10 +182,9 @@ export function usePlayer(store: Store<GlobalState>) {
     pause()
     setTime(0)
   }
-  const currentLyric = computed(() => store.getters['player/currentLyric'])
-  const fullScreen = computed(() => store.state.player.fullScreen)
+
   function toggleFullScreen(payload: boolean) {
-    store.commit('player/' + Types.SET_PLAYER_SCREEN, payload)
+    store.fullScreen = payload
   }
   return {
     fullScreen,
@@ -188,7 +204,7 @@ export function usePlayer(store: Store<GlobalState>) {
     pause,
     play,
     playSong,
-    mode,
+    mode: currentMode,
     changeMode,
     next,
     prev,
@@ -202,26 +218,18 @@ export function usePlayer(store: Store<GlobalState>) {
     deleteSong,
     clearSong,
     setCurrentSong,
-    cachePercent
+    cachePercent,
+    setTime
   }
 }
 
-export function usePlayMusic(store: Store<GlobalState>) {
-  const playing = computed(() => store.state.player.playing)
-  const currentSong = computed(() => store.getters['player/currentSong'])
-  function selectPlay(list: Track[], index: number) {
-    store.dispatch('player/selectPlay', {
-      list,
-      index
-    })
-  }
-  function insertSong(song: Track) {
-    store.dispatch('player/insertSong', song)
-  }
+export function usePlayMusic() {
+  const store = usePlayerStore()
+  const { currentSong, playing } = storeToRefs(store)
   return {
     currentSong,
-    insertSong,
-    selectPlay,
+    insertSong: store.insertSong,
+    selectPlay: store.selectPlay,
     playing
   }
 }

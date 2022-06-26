@@ -83,7 +83,12 @@ export function updatePlaylistTracks(
   op: 'add' | 'del'
 ) {
   const tracks = Array.isArray(trackId) ? trackId.join(',') : trackId
-  return request<any>('/playlist/tracks', 'get', { op, pid, tracks })
+  return request<any>('/playlist/tracks', 'get', {
+    op,
+    pid,
+    tracks,
+    timestamp: Date.now()
+  })
 }
 
 // 创建歌单

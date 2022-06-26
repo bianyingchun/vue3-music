@@ -20,8 +20,7 @@
 </template>
 
 <script lang="ts">
-import { useStore } from 'vuex'
-import { GlobalState, Comment } from '@/types'
+import { Comment } from '@/types'
 import { defineComponent, PropType, ref, watch, computed } from 'vue'
 import { useAuth } from '@/hooks/useAuth'
 export default defineComponent({
@@ -33,8 +32,7 @@ export default defineComponent({
   },
   emits: ['submit', 'update:value', 'blur'],
   setup(props, { emit }) {
-    const store = useStore<GlobalState>()
-    const { account, toggleLoginBox } = useAuth(store)
+    const { account, toggleLoginBox } = useAuth()
     const islocked = ref(false)
     const inputRef = ref<HTMLDivElement | null>(null)
     function onInput() {

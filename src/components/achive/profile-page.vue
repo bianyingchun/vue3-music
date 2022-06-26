@@ -10,7 +10,7 @@
       <span class="title">
         {{
           (userDetail ? userDetail.profile.nickname : '') ||
-          (artist ? artist.name : '')
+            (artist ? artist.name : '')
         }}
       </span>
     </div>
@@ -94,10 +94,9 @@
 </template>
 <script lang="ts">
 import { defineComponent, PropType, ref, onMounted, computed } from 'vue'
+
 import { UserDetail, Artist } from '@/types'
 import { popup } from '@/plugin/popup'
-import { useStore } from 'vuex'
-import { GlobalState } from '@/types'
 import { useAuth } from '@/hooks/useAuth'
 export default defineComponent({
   emits: ['toggle-follow'],
@@ -107,8 +106,7 @@ export default defineComponent({
     userDetail: Object as PropType<UserDetail | null>
   },
   setup(props, { emit }) {
-    const store = useStore<GlobalState>()
-    const { account } = useAuth(store)
+    const { account } = useAuth()
     const titleOpacity = ref(0)
     const scrollable = ref(false)
     const container = ref<HTMLDivElement | null>(null)
@@ -269,7 +267,7 @@ export default defineComponent({
       height: calc(100vh - 60px);
       display: flex;
       flex-direction: column;
-      &.unscrollable ::v-deep .scroller-container {
+      &.unscrollable :deep .scroller-container {
         overflow: hidden;
       }
       .profile-swiper {

@@ -11,7 +11,7 @@ import {
 } from '@/types'
 interface LoginPhoneParams {
   phone: string
-  password: string
+  md5_password: string
 }
 export function loginByPhone(params: LoginPhoneParams) {
   // ?phone=xxx&password=yyy
@@ -98,7 +98,7 @@ export async function getlikelistIds(uid: number) {
 export function followUser(uid: number, follow: boolean) {
   return request<any>('/follow', 'post', {
     uid,
-    t: follow ? 1 : 0,
+    t: follow ? 1 : 2,
     timestamp: Date.now()
   })
 }

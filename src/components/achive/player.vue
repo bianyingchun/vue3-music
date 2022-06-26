@@ -9,7 +9,11 @@
         <div class="lyric">{{ currentLyric }}</div>
       </div>
       <div class="control" :class="{ playing: playing }">
-        <progress-circle :percent="percent" :radius="36" @click.stop="togglePlay">
+        <progress-circle
+          :percent="percent"
+          :radius="36"
+          @click.stop="togglePlay"
+        >
           <span class="iconfont icon-pause icon-mini" v-if="playing"></span>
           <span class="iconfont icon-play icon-mini" v-else></span>
         </progress-circle>
@@ -19,14 +23,20 @@
       </div>
     </div>
     <div class="full-player" v-show="fullScreen">
-      <div class="bg" :style="{ backgroundImage: `url(${currentSong.al.picUrl})` }"></div>
+      <div
+        class="bg"
+        :style="{ backgroundImage: `url(${currentSong.al.picUrl})` }"
+      ></div>
       <div class="content">
         <header>
-          <span class="iconfont icon-back" @click="toggleFullScreen(false)"></span>
+          <span
+            class="iconfont icon-back"
+            @click="toggleFullScreen(false)"
+          ></span>
           <div class="title">
             <div class="name">{{ currentSong.name }}</div>
             <div class="singer" @click="showSongAr(currentSong)">
-              {{ singerName + " >" }}
+              {{ singerName + ' >' }}
             </div>
           </div>
           <span className="iconfont icon-share"></span>
@@ -52,6 +62,12 @@
               >
                 <span class="iconfont icon-comment"></span>
               </div>
+              <div
+                class="tool-item"
+                @click="$router.push(`/song/${currentSong.id}/similar`)"
+              >
+                <span class="iconfont icon-mix"></span>
+              </div>
               <div class="tool-item" @click="favTrackToMix(currentSong)">
                 <span class="iconfont icon-add-box"></span>
               </div>
@@ -65,8 +81,11 @@
               <div
                 v-for="(item, index) in lyric.data.lrc"
                 :key="index"
-                @dblclick="setPlayTime(item.time)"
-                :class="['lyric-item', { active: lyric.currentIndex === index }]"
+                @dblclick="setTime(item.time)"
+                :class="[
+                  'lyric-item',
+                  { active: lyric.currentIndex === index }
+                ]"
               >
                 {{ item.value }}
               </div>
@@ -94,7 +113,10 @@
               <span class="iconfont icon-play-fill" v-else></span>
             </div>
             <span class="iconfont icon-play-next" @click="next"></span>
-            <span className="iconfont icon-play-list" @click="showPlayList = true"></span>
+            <span
+              className="iconfont icon-play-list"
+              @click="showPlayList = true"
+            ></span>
           </div>
         </footer>
       </div>
@@ -122,28 +144,25 @@
 </template>
 
 <script lang="ts">
-import { GlobalState } from "@/types";
-import { defineComponent, watch, nextTick, ref } from "vue";
-import { useStore } from "vuex";
-import { useRoute } from "vue-router";
-import ProgressCircle from "@/components/widget/progress-circle.vue";
-import { usePlayer } from "@/hooks/usePlayer";
-import PlayList from "./current-playlist.vue";
-import ProgressBar from "@/components/widget/progress-bar.vue";
-import BottomPanel from "@/components/widget/bottom-panel.vue";
-import { timeParser } from "@/common/js/music";
-import { favTrackToMix } from "@/hooks/useFavToMix";
-import { showSongAr } from "@/hooks/useSongAr";
+import { defineComponent, watch, nextTick, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import ProgressCircle from '@/components/widget/progress-circle.vue'
+import { usePlayer } from '@/hooks/usePlayer'
+import PlayList from './current-playlist.vue'
+import ProgressBar from '@/components/widget/progress-bar.vue'
+import BottomPanel from '@/components/widget/bottom-panel.vue'
+import { timeParser } from '@/common/js/music'
+import { favTrackToMix } from '@/hooks/useFavToMix'
+import { showSongAr } from '@/hooks/useSongAr'
 export default defineComponent({
   components: {
     ProgressCircle,
     PlayList,
     BottomPanel,
-    ProgressBar,
+    ProgressBar
   },
   setup() {
-    const showPlayList = ref(false);
-    const store = useStore<GlobalState>();
+    const showPlayList = ref(false)
     const {
       fullScreen,
       toggleFullScreen,
@@ -156,6 +175,7 @@ export default defineComponent({
       percent,
       cachePercent,
       currentTime,
+      setTime,
       onUpdateTime,
       onPercentChange,
       audio,
@@ -174,67 +194,67 @@ export default defineComponent({
       deleteSong,
       clearSong,
       setCurrentSong,
-      sequenceList,
-    } = usePlayer(store);
+      sequenceList
+    } = usePlayer()
+    console.log(mode)
     watch(
       () => currentSong.value,
-      (song) => {
+      song => {
         if (song && song.id) {
-          // store.dispatch('player/fetchLyric', song.id)
           nextTick(() => {
-            playSong(song);
-          });
+            playSong(song)
+          })
         } else {
-          showPlayList.value = false;
+          showPlayList.value = false
         }
       },
       {
-        immediate: true,
+        immediate: true
       }
-    );
-    const showLyric = ref(false);
+    )
+    const showLyric = ref(false)
     function toggleShowLyric() {
-      showLyric.value = !showLyric.value;
+      showLyric.value = !showLyric.value
     }
 
-    let lyricHeightArr: number[] = [];
+    let lyricHeightArr: number[] = []
     watch(
       () => lyric.value.data.lrc,
       () => {
         nextTick(() => {
-          lyricHeightArr = [];
-          const ps = document.querySelectorAll(".lyric-item");
-          let h = 0;
+          lyricHeightArr = []
+          const ps = document.querySelectorAll('.lyric-item')
+          let h = 0
           for (let i = 0; i < ps.length; i++) {
-            lyricHeightArr.push(h);
-            h += ps[i].clientHeight;
+            lyricHeightArr.push(h)
+            h += ps[i].clientHeight
           }
-        });
+        })
       },
       {
-        immediate: true,
+        immediate: true
       }
-    );
+    )
     watch(
       () => lyric.value.currentIndex,
-      (index) => {
-        const top = lyricHeightArr[index];
-        const wraper = document.querySelector(".lyric-wraper");
-        (wraper as HTMLElement).scrollTo({
+      index => {
+        const top = lyricHeightArr[index]
+        const wraper = document.querySelector('.lyric-wraper')
+        ;(wraper as HTMLElement).scrollTo({
           top,
-          behavior: "smooth",
-        });
+          behavior: 'smooth'
+        })
       }
-    );
-    const route = useRoute();
+    )
+    const route = useRoute()
     watch(
       () => route.path,
       () => {
         if (fullScreen.value) {
-          toggleFullScreen(false);
+          toggleFullScreen(false)
         }
       }
-    );
+    )
     return {
       currentSong,
       playList,
@@ -271,9 +291,10 @@ export default defineComponent({
       showSongAr,
       favTrackToMix,
       sequenceList,
-    };
-  },
-});
+      setTime
+    }
+  }
+})
 </script>
 
 <style lang="scss" scoped>

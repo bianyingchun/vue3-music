@@ -16,7 +16,8 @@
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue'
 import { TipItem } from './index.js'
-import store from '@/store'
+import useSystemStore from '@/store/system'
+
 export default defineComponent({
   props: {
     list: Array as PropType<TipItem[]>,
@@ -24,7 +25,8 @@ export default defineComponent({
     hide: Function
   },
   setup() {
-    const theme = computed(() => store.state.system.theme)
+    const store = useSystemStore()
+    const theme = computed(() => store.theme.current)
     return {
       theme: theme
     }

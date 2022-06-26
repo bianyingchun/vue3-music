@@ -7,7 +7,11 @@
     ref="container"
   >
     <div class="banner">
-      <swiper :autoplay="true" :loop="true" :pagination="{ el: '.swiper-pagination' }">
+      <swiper
+        :autoplay="true"
+        :loop="true"
+        :pagination="{ el: '.swiper-pagination' }"
+      >
         <swiper-slide :key="index" v-for="(item, index) in banners">
           <div class="banner-item">
             <img :src="item.pic" alt="" />
@@ -39,7 +43,7 @@
     <div class="block" v-if="homeData.customSonglist">
       <div class="block-header">
         <h3>{{ homeData.customSonglist.title }}</h3>
-        <span class="block-btn">
+        <span class="block-btn" @click="playTrackList">
           播放
           <i class="iconfont icon-play"></i>
         </span>
@@ -65,43 +69,51 @@
     :class="['refresh-btn', { on: isRefreshing, off: !translateY }]"
     :style="{ transform: `translateY(${translateY}px) rotate(${rotate}deg)` }"
   >
-    <i class="iconfont icon-loop"></i>
+    <i class="iconfont icon-refresh"></i>
   </span>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import SwiperCore, { Scrollbar, Autoplay, Pagination } from "swiper";
-import { Swiper, SwiperSlide } from "swiper/vue";
-import { getHomePage, getHomeBallList, getBannerList } from "@/common/api/discovery";
-import { HomePageData, Ball, Banner } from "@/types";
-import CustomSong from "./components/custom-songs.vue";
-import RcmdPlaylists from "./components/rcmd-playlists.vue";
-SwiperCore.use([Scrollbar, Autoplay, Pagination]);
-const refreshGap = 60;
-const maxTranslateY = 120;
-const perYDeg = 6;
+import { defineComponent, ref } from 'vue'
+import SwiperCore, { Scrollbar, Autoplay, Pagination } from 'swiper'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import {
+  getHomePage,
+  getHomeBallList,
+  getBannerList
+} from '@/common/api/discovery'
+import { HomePageData, Ball, Banner, Track } from '@/types'
+import CustomSong from './components/custom-songs.vue'
+import RcmdPlaylists from './components/rcmd-playlists.vue'
+import { transformTrack } from '@/common/js/music'
+import { usePlayMusic } from '@/hooks/usePlayer'
+
+SwiperCore.use([Scrollbar, Autoplay, Pagination])
+
+const refreshGap = 60
+const maxTranslateY = 120
+const perYDeg = 6
 export default defineComponent({
   components: {
     CustomSong,
     RcmdPlaylists,
     Swiper,
-    SwiperSlide,
+    SwiperSlide
   },
   // eslint-disable-next-line vue/no-setup-props-destructure
   setup() {
-    const homeData = ref<HomePageData>({});
-    const ballList = ref<Ball[]>([]);
-    const banners = ref<Banner[]>([]);
+    const homeData = ref<HomePageData>({})
+    const ballList = ref<Ball[]>([])
+    const banners = ref<Banner[]>([])
     async function getDiscoveryData() {
-      const res = await Promise.all([getHomePage(), getHomeBallList()]);
-      homeData.value = res[0];
-      ballList.value = res[1];
+      const res = await Promise.all([getHomePage(), getHomeBallList()])
+      homeData.value = res[0]
+      ballList.value = res[1]
     }
     async function getBanners() {
-      const res = await getBannerList();
+      const res = await getBannerList()
       if (res.data.code === 200) {
-        banners.value = res.data.banners;
+        banners.value = res.data.banners
       }
     }
 
@@ -109,56 +121,76 @@ export default defineComponent({
       initialed: false,
       startY: 0,
       startX: 0,
-      diffY: 0,
-    };
-    const isRefreshing = ref(false);
-    const container = ref<null | HTMLDivElement>(null);
-    const translateY = ref(0);
-    const rotate = ref(0);
+      diffY: 0
+    }
+    const isRefreshing = ref(false)
+    const container = ref<null | HTMLDivElement>(null)
+    const translateY = ref(0)
+    const rotate = ref(0)
 
     async function refresh() {
-      isRefreshing.value = true;
-      await Promise.all([getDiscoveryData(), getBanners()]);
-      isRefreshing.value = false;
-      translateY.value = 0;
-      rotate.value = 0;
+      isRefreshing.value = true
+      await Promise.all([getDiscoveryData(), getBanners()])
+      isRefreshing.value = false
+      translateY.value = 0
+      rotate.value = 0
     }
 
     const onTouchStart = (e: TouchEvent) => {
-      const el = container.value;
-      if (!el || el.scrollTop || isRefreshing.value) return;
-      touch.initialed = true;
-      touch.startY = e.touches[0].pageY;
-      touch.startX = e.touches[0].pageX;
-    };
+      const el = container.value
+      if (!el || el.scrollTop || isRefreshing.value) return
+      touch.initialed = true
+      touch.startY = e.touches[0].pageY
+      touch.startX = e.touches[0].pageX
+    }
 
     const onTouchMove = (e: TouchEvent) => {
-      if (!touch.initialed || isRefreshing.value) return;
-      const el = container.value?.parentElement;
-      if (!el || el?.scrollTop) return;
-      const { pageY } = e.touches[0];
+      if (!touch.initialed || isRefreshing.value) return
+      const el = container.value?.parentElement
+      if (!el || el?.scrollTop) return
+      const { pageY } = e.touches[0]
       // const diffX = pageX - touch.startX
-      const diffY = pageY - touch.startY;
+      const diffY = pageY - touch.startY
       if (diffY > 0) {
-        touch.diffY = diffY;
-        translateY.value = Math.min(diffY, maxTranslateY);
-        rotate.value = parseInt((perYDeg * translateY.value).toFixed(2));
+        touch.diffY = diffY
+        translateY.value = Math.min(diffY, maxTranslateY)
+        rotate.value = parseInt((perYDeg * translateY.value).toFixed(2))
       } else {
-        touch.diffY = 0;
+        touch.diffY = 0
       }
-    };
+    }
     const onTouchEnd = () => {
-      const el = container.value?.parentElement;
-      if (!el || isRefreshing.value) return;
+      const el = container.value?.parentElement
+      if (!el || isRefreshing.value) return
       if (touch.diffY >= refreshGap) {
-        refresh();
+        refresh()
       } else {
-        translateY.value = 0;
-        rotate.value = 0;
+        translateY.value = 0
+        rotate.value = 0
       }
-      touch.initialed = false;
-    };
-    refresh();
+      touch.initialed = false
+    }
+    refresh()
+
+    function playTrackList() {
+      const customSonglist = homeData.value.customSonglist
+      if (customSonglist) {
+        const list: Track[] = []
+        customSonglist.data.forEach(item => {
+          item.resources.forEach(item => {
+            const song = item.resourceExtInfo.songData
+            if (song) {
+              const track = transformTrack(song)
+              song.index = list.length
+              list.push(track)
+            }
+          })
+          const { selectPlay } = usePlayMusic()
+          selectPlay(list, 0)
+        })
+      }
+      console.log(JSON.stringify(homeData.value.customSonglist))
+    }
     return {
       ballList,
       homeData,
@@ -170,9 +202,10 @@ export default defineComponent({
       container,
       translateY,
       rotate,
-    };
-  },
-});
+      playTrackList
+    }
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -238,7 +271,7 @@ export default defineComponent({
     }
   }
 }
-.swiper-pagination ::v-deep .swiper-pagination-bullet-active {
+.swiper-pagination :deep .swiper-pagination-bullet-active {
   background: #fff;
 }
 .refresh-btn {
@@ -254,6 +287,10 @@ export default defineComponent({
   font-weight: bold;
   text-align: center;
   line-height: 40px;
+  box-shadow: 0px 0px 3px 0px #2c2c2c;
+  .iconfont {
+    font-size: $font-size-lg;
+  }
   &.off {
     transition: 0.3s linear all;
   }

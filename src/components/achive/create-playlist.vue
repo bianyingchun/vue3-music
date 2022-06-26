@@ -38,8 +38,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import BottomPanel from '../widget/bottom-panel.vue'
-import { useStore } from 'vuex'
-import { GlobalState } from '@/types'
+import usePlaylistsStore from '@/store/playlists'
 export default defineComponent({
   components: {
     BottomPanel
@@ -54,10 +53,10 @@ export default defineComponent({
       privacy: false
     })
 
-    const store = useStore<GlobalState>()
+    const store = usePlaylistsStore()
     async function submit() {
       visible.value = false
-      await store.dispatch('playlists/addPlaylist', playlist.value)
+      store.addPlaylist(playlist.value)
     }
     return {
       visible,

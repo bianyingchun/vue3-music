@@ -26,10 +26,9 @@
 
 <script lang="ts">
 import { defineComponent, computed, onMounted } from 'vue'
-import { useStore } from 'vuex'
-import { GlobalState } from '@/types'
 import * as Types from '@/store/action-types'
 import BottomPanel from '@/components/widget/bottom-panel.vue'
+import usePlaylistsStore from '@/store/playlists'
 export default defineComponent({
   props: {
     show: Boolean,
@@ -39,14 +38,14 @@ export default defineComponent({
     BottomPanel
   },
   setup(props, { emit }) {
-    const store = useStore<GlobalState>()
+    const store = usePlaylistsStore()
     const hqTags = computed(() => {
-      return store.state.playlists.hqTags
+      return store.hqTags
     })
 
     onMounted(() => {
       if (!hqTags.value.length) {
-        store.dispatch(`playlists/${Types.SET_HQ_TAGLIST}`)
+        store.getHqTaglist()
       }
     })
     function close() {

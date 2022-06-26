@@ -2,14 +2,19 @@
   <div class="current-playlist">
     <header>
       <div class="title">
-        当前播放<span class="count">({{ sequenceList.length }})</span>
+        当前播放<span class="count">({{ sequenceList?.length }})</span>
       </div>
       <div class="tools">
         <div class="play-mode">
-          <span :class="['iconfont', mode.icon]" @click="$emit('change-mode')"></span
-          >{{ mode.text }}
+          <span
+            :class="['iconfont', mode?.icon]"
+            @click="$emit('change-mode')"
+          ></span
+          >{{ mode?.text }}
         </div>
-        <div class="fav-btn"><span class="iconfont icon-add-box"></span>收藏全部</div>
+        <div class="fav-btn">
+          <span class="iconfont icon-add-box"></span>收藏全部
+        </div>
         <div class="clear-btn" @click="$emit('clear')">
           <span class="iconfont icon-delete"></span>
         </div>
@@ -21,15 +26,20 @@
           class="song-item"
           v-for="(song, index) in sequenceList"
           :key="index"
-          :class="{ active: currentSong.id === song.id }"
+          :class="{ active: currentSong?.id === song.id }"
         >
           <div class="content" @click.stop="$emit('change-song', song)">
             <span class="name">{{ song.name }}</span>
-            <span class="desc"> - {{ song.ar.map((item) => item.name).join("/") }}</span>
+            <span class="desc">
+              - {{ song.ar.map(item => item.name).join('/') }}</span
+            >
           </div>
           <div class="play-flag">播放来源</div>
           <div class="tools">
-            <span class="iconfont icon-close" @click.stop="$emit('delete', song)"></span>
+            <span
+              class="iconfont icon-close"
+              @click.stop="$emit('delete', song)"
+            ></span>
           </div>
         </div>
       </div>
@@ -38,16 +48,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
-import { Track, PlayModeItem } from "src/types";
+import { defineComponent, PropType } from 'vue'
+import { Track, PlayModeItem } from '@/types/index'
 export default defineComponent({
   props: {
     currentSong: Object as PropType<Track>,
     sequenceList: Array as PropType<Track[]>,
-    mode: Object as PropType<PlayModeItem>,
+    mode: Object as PropType<PlayModeItem>
   },
-  emits: ["change-mode", "clear", "delete", "change-song"],
-});
+  emits: ['change-mode', 'clear', 'delete', 'change-song']
+})
 </script>
 
 <style lang="scss" scoped>

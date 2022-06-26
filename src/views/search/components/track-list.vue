@@ -7,15 +7,15 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
-import { useStore } from 'vuex'
 import SongList from '@/components/achive/song-list.vue'
 import { showToast } from '@/plugin/toast'
-import { GlobalState, SearchTrackResult, SearchTypeVal, Track } from '@/types'
+import { SearchTrackResult, SearchTypeVal, Track } from '@/types'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { usePlayMusic } from '@/hooks/usePlayer'
 import { search } from '@/common/api/search'
 import { transformTrack } from '@/common/js/music'
 import { getSongDetail } from '@/common/api/song'
+
 export default defineComponent({
   props: {
     active: Boolean,
@@ -28,8 +28,7 @@ export default defineComponent({
     let hasMore = true
     const loading = ref(false)
     const list = ref<Track[]>([])
-    const store = useStore<GlobalState>()
-    const { currentSong, insertSong } = usePlayMusic(store)
+    const { currentSong, insertSong } = usePlayMusic()
     async function onSelect(list: Track[], index: number) {
       try {
         const res = await getSongDetail([list[index].id])

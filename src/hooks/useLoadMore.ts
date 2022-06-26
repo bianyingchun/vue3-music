@@ -1,11 +1,11 @@
-import _ from 'lodash'
+import { throttle } from 'lodash'
 import { Ref, onMounted, onUnmounted } from 'vue'
 export function useLoadMore(
   refreshElm: Ref<null | HTMLElement>,
   loadData: () => any
 ) {
   let element: HTMLElement
-  const _loadMore = _.throttle(() => {
+  const _loadMore = throttle(() => {
     const containerHeight = element.clientHeight
     const scrollTop = element.scrollTop
     const scrollHeight = element.scrollHeight

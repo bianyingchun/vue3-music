@@ -112,9 +112,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useStore } from 'vuex'
+
 import SongList from '@/components/achive/song-list.vue'
 import { usePlayMusic } from '@/hooks/usePlayer'
 import MixPage from '@/components/achive/mix-page.vue'
@@ -125,16 +125,14 @@ export default defineComponent({
   setup() {
     const loading = ref<boolean>(true)
     const route = useRoute()
-    const id = Number(route.params.id)
-    const store = useStore<GlobalState>()
-    const { selectPlay, currentSong } = usePlayMusic(store)
+
+    const { selectPlay, currentSong } = usePlayMusic()
     const { playlist, toggleSubscribe, getPlaylistDetail, checkIsSelf } =
-      usePlaylist(store)
+      usePlaylist()
     const showDetail = ref(false)
-    const { deleteTrack } = useMylist(store)
-    async function getDetail() {
+    const { deleteTrack } = useMylist()
+    async function getDetail(id: number) {
       loading.value = true
-      console.log(loading.value)
       await getPlaylistDetail(id)
       loading.value = false
     }
@@ -143,13 +141,22 @@ export default defineComponent({
     })
     async function unFavTrackToMix(track: Track) {
       if (!isSelf.value) return
-      await deleteTrack(id, track)
+      await deleteTrack(Number(route.params.id), track)
     }
     function playAll() {
       selectPlay(playlist.value?.tracks || [], 0)
     }
-
-    getDetail()
+    watch(
+      () => route.params.id,
+      id => {
+        if (route.name === 'playlist-detail') {
+          getDetail(Number(id))
+        }
+      },
+      {
+        immediate: true
+      }
+    )
     return {
       playAll,
       playlist,
@@ -162,6 +169,7 @@ export default defineComponent({
       showDetail
     }
   },
+
   components: {
     MixPage,
     SongList,

@@ -9,19 +9,13 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import store from '@/store'
 
 export default defineComponent({
   props: {
     showWrap: Boolean,
     showContent: Boolean,
-    text: String
-  },
-  setup() {
-    const theme = computed(() => store.state.system.theme)
-    return {
-      theme: theme
-    }
+    text: String,
+    theme: String
   }
 })
 </script>

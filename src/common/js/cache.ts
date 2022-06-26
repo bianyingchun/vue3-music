@@ -65,6 +65,8 @@ export const savePlay = (song: Track) => {
     (item: Track) => item.id === song.id,
     PLAY_MAX_LEN
   )
+  setStorage(PLAY_KEY, list)
+  return list
 }
 
 export const loadSearch = () => {

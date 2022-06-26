@@ -16,15 +16,13 @@
 <script lang="ts" scoped>
 import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'
-import { useStore } from 'vuex'
-import { GlobalState } from '@/types'
 import { useAuth } from '@/hooks/useAuth'
+import avatar from '@/assets/pics/avatar.png'
 
 export default defineComponent({
   setup() {
     const router = useRouter()
-    const store = useStore<GlobalState>()
-    const { profile, toggleLoginBox } = useAuth(store)
+    const { profile, toggleLoginBox } = useAuth()
     function onClick() {
       if (profile.value) {
         router.push('/user/' + profile.value.userId)
@@ -35,7 +33,7 @@ export default defineComponent({
     return {
       profile,
       onClick,
-      defaultAvatar: require('@/assets/pics/avatar.png')
+      defaultAvatar: avatar
     }
   }
 })

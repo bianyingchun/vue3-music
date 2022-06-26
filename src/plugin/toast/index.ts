@@ -1,4 +1,5 @@
-import { reactive, createApp, h } from 'vue'
+import { reactive, createApp, h, computed } from 'vue'
+import useSystemStore from '@/store/system'
 import ToastComp from './index.vue'
 let toastVm: any = null
 let toastWraperTimer: any = null
@@ -9,6 +10,7 @@ const state = reactive({
   showContent: false,
   text: ''
 })
+
 export function showToast(text: string, duration = 4 * 1000) {
   state.showContent = true
   state.showWrap = true
@@ -16,11 +18,14 @@ export function showToast(text: string, duration = 4 * 1000) {
   if (toastVm === null) {
     toastVm = createApp({
       setup() {
+        const store = useSystemStore()
+        const theme = computed(() => store.theme.current)
         return () =>
           h(ToastComp, {
             showContent: state.showContent,
             showWrap: state.showWrap,
-            text: state.text
+            text: state.text,
+            theme: theme.value
           })
       }
     })

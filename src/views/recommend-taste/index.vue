@@ -32,18 +32,16 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue'
 import { getRecommendSongs } from '@/common/api/discovery'
-import { useStore } from 'vuex'
 import SongList from '@/components/achive/song-list.vue'
 import MixPage from '@/components/achive/mix-page.vue'
-import { Track, GlobalState } from '@/types'
+import { Track } from '@/types'
 import { usePlayMusic } from '@/hooks/usePlayer'
 import { useAuth } from '@/hooks/useAuth'
 export default defineComponent({
   setup() {
     const list = ref<Track[]>([])
-    const store = useStore<GlobalState>()
     const loading = ref<boolean>(true)
-    const { selectPlay, currentSong } = usePlayMusic(store)
+    const { selectPlay, currentSong } = usePlayMusic()
     async function getData() {
       loading.value = true
       const res = await getRecommendSongs()
@@ -58,7 +56,7 @@ export default defineComponent({
     function playAll() {
       selectPlay(list.value || [], 0)
     }
-    const { account, toggleLoginBox } = useAuth(store)
+    const { account, toggleLoginBox } = useAuth()
     if (!account.value) {
       toggleLoginBox(true)
     }

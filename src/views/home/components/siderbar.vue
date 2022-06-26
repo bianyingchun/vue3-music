@@ -33,12 +33,12 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, inject } from 'vue'
-import { useStore } from 'vuex'
-import { GlobalState, Theme } from '@/types'
-import { SET_SYSYTEM_THEME } from '@/store/action-types'
+import { Theme } from '@/types'
 import AccountBox from '@/components/achive/account-box.vue'
 import SwitchBox from '@/components/widget/switch.vue'
 import { popup } from '@/plugin/popup'
+import useSystemStore from '@/store/system'
+import useAuthStore from '@/store/auth'
 export default defineComponent({
   components: {
     AccountBox,
@@ -46,20 +46,20 @@ export default defineComponent({
   },
   setup() {
     const reload = inject('reload') as () => void
-    const store = useStore<GlobalState>()
-    const theme = computed(() => store.state.system.theme.current)
+    const store = useSystemStore()
+    const theme = computed(() => store.theme.current)
     function toggleTheme() {
-      store.commit(
-        'system/' + SET_SYSYTEM_THEME,
+      store.setSystemTheme(
         theme.value === Theme.dark ? Theme.light : Theme.dark
       )
     }
-    const logined = computed(() => store.state.auth.logined)
-    const isLogouting = computed(() => store.state.auth.isLogouting)
+    const authStore = useAuthStore()
+    const logined = computed(() => authStore.logined)
+    const isLogouting = computed(() => authStore.isLogouting)
     const logout = async () => {
       try {
         await popup('确认退出登录？')
-        const res = await store.dispatch('auth/logout')
+        const res = await authStore.logout()
         console.log(res)
         if (res) {
           reload()
